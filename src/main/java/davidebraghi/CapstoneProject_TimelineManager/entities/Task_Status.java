@@ -11,7 +11,12 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "task_status")
+@AllArgsConstructor
+@Table(name = "task_status",
+        indexes = {
+                @Index(name = "idx_status_name", columnList = "task_status_name"),
+                @Index(name = "idx_status_order", columnList = "orderIndex")
+        })
 public class Task_Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +26,27 @@ public class Task_Status {
     @Column(name = "task_status_name", unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
     private TaskStatusENUM statusName;
+    @Column(name = "orderIndex", nullable = false)
+    private Integer orderIndex;
 
     // relazioni
 
-    @OneToMany(mappedBy = "status", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
     private List<Task> tasks;
 
-    public Task_Status(
-            TaskStatusENUM statusName
-    ) {
+    public Task_Status(TaskStatusENUM statusName, Integer orderIndex) {
         this.statusName = statusName;
+        this.orderIndex = orderIndex;
+    }
+
+    // Metodi utility
+
+    public String getDisplayName() {
+        return statusName.name();
+    }
+
+    public boolean isFinalStatus() {
+        return statusName == TaskStatusENUM.COMPLETED ||
+                statusName == TaskStatusENUM.PAUSED_OR_BLOCKED;
     }
 }

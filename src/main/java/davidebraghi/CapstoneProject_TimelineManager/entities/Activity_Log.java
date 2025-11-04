@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,12 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "activity_logs")
+@Table(name = "activity_logs",
+        indexes = {
+                @Index(name = "idx_activity_user", columnList = "userId"),
+                @Index(name = "idx_activity_type", columnList = "activityType"),
+                @Index(name = "idx_activity_timestamp", columnList = "timestamp")
+        })
 public class Activity_Log {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +31,7 @@ public class Activity_Log {
     private ActivityTypeENUM activityType;
     @Column(name = "activityDescription", columnDefinition = "TEXT", nullable = false)
     private String activityDescription;
+    @CreationTimestamp
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 
@@ -39,11 +46,6 @@ public class Activity_Log {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taskId", nullable = true)
     private Task task;
-
-    @PrePersist
-    protected void onCreate() {
-        timestamp = LocalDateTime.now();
-    }
 
     // activity LOGGER <Nickname> - <TipoAttività>: <Descrizione>
 

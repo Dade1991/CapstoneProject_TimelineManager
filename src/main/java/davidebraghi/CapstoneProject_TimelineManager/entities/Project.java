@@ -11,7 +11,11 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "projects")
+@AllArgsConstructor
+@Table(name = "projects",
+        indexes = {
+                @Index(name = "idx_project_creator", columnList = "creatorUserId")
+        })
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +24,7 @@ public class Project {
     private Long projectId;
     @Column(name = "project_name")
     private String projectName;
-    @Column(name = "project_description")
+    @Column(name = "project_description", columnDefinition = "TEXT")
     private String projectDescription;
     @Setter(AccessLevel.NONE)
     @Column(name = "creationDate", nullable = false)
@@ -44,16 +48,28 @@ public class Project {
 
     public Project(String projectName,
                    String projectDescription,
-                   LocalDate creationDate,
                    LocalDate expiryDate) {
         this.projectName = projectName;
         this.projectDescription = projectDescription;
-        this.creationDate = creationDate;
         this.expiryDate = expiryDate;
     }
 
     @PrePersist
     protected void onCreate() {
         creationDate = LocalDate.now();
+    }
+
+    // Metodi utility
+
+    public int getTaskCount() {
+        return tasks != null ? tasks.size() : 0;
+    }
+
+    public boolean isCreator(User user) {
+        return creator.getUserId().equals(user.getUserId());
+    }
+
+    public boolean isOverdue() {
+        return expiryDate != null && expiryDate.isBefore(LocalDate.now());
     }
 }

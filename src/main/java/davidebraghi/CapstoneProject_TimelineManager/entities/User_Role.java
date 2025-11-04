@@ -2,10 +2,7 @@ package davidebraghi.CapstoneProject_TimelineManager.entities;
 
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -14,10 +11,15 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "user_roles")
+@AllArgsConstructor
+@Table(name = "user_roles",
+        indexes = {
+                @Index(name = "idx_role_name", columnList = "roleName")
+        })
 public class User_Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     @Column(name = "roleId")
     private Long roleId;
 
@@ -27,12 +29,35 @@ public class User_Role {
 
     // relazioni
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<Project_User_Role> projectUserRoles;
 
     public User_Role(
             RoleNameENUM roleName
     ) {
         this.roleName = roleName;
+    }
+
+    // Metodi utility
+
+    public String getDisplayName() {
+        return roleName.name();
+    }
+
+    public boolean isAdmin() {
+        return roleName == RoleNameENUM.ADMIN;
+    }
+
+    public boolean isManager() {
+        return roleName == RoleNameENUM.MANAGER;
+    }
+
+    public boolean canManageProjects() {
+        return roleName == RoleNameENUM.ADMIN ||
+                roleName == RoleNameENUM.MANAGER;
+    }
+
+    public int getAssignmentCount() {
+        return projectUserRoles != null ? projectUserRoles.size() : 0;
     }
 }

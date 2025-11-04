@@ -1,10 +1,7 @@
 package davidebraghi.CapstoneProject_TimelineManager.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -13,13 +10,27 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "project_user_roles")
+@AllArgsConstructor
+@Table(name = "project_user_roles",
+        indexes = {
+                @Index(name = "idx_pur_project", columnList = "projectId"),
+                @Index(name = "idx_pur_user", columnList = "userId"),
+                @Index(name = "idx_pur_role", columnList = "roleId")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"projectId", "userId", "roleId"},
+                        name = "uk_project_user_role"
+                )
+        })
 public class Project_User_Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     @Column(name = "projectUserRoleId")
     private Long projectUserRoleId;
     @Column(name = "creationDate", nullable = false)
+    @Setter(AccessLevel.NONE)
     private LocalDate creationDate;
 
     // relazioni

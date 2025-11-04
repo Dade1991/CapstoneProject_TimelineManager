@@ -3,10 +3,7 @@ package davidebraghi.CapstoneProject_TimelineManager.entities;
 import davidebraghi.CapstoneProject_TimelineManager.enums.EmailNotificationStatusENUM;
 import davidebraghi.CapstoneProject_TimelineManager.enums.EmailNotificationTypeENUM;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -15,10 +12,17 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "email_notifications")
+@AllArgsConstructor
+@Table(name = "email_notifications",
+        indexes = {
+                @Index(name = "idx_email_user", columnList = "userId"),
+                @Index(name = "idx_email_status", columnList = "notificationStatus"),
+                @Index(name = "idx_email_type", columnList = "notification_type")
+        })
 public class Email_Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     @Column(name = "email_notification_id")
     private Long emailNotificationId;
     @Column(name = "notification_type", nullable = false)
@@ -29,7 +33,7 @@ public class Email_Notification {
     private EmailNotificationStatusENUM notificationStatus;
     @Column(name = "email_subject", nullable = false)
     private String emailSubject;
-    @Column(name = "email_body", nullable = false)
+    @Column(name = "email_body", columnDefinition = "TEXT")
     private String emailBody;
     @Column(name = "sendDate", nullable = false)
     private LocalDateTime sendDate;

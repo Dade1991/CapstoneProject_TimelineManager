@@ -3,6 +3,7 @@ package davidebraghi.CapstoneProject_TimelineManager.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +13,12 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "users")
+@AllArgsConstructor
+@Table(name = "users",
+        indexes = {
+                @Index(name = "idx_users_email", columnList = "user_email"),
+                @Index(name = "idx_users_nickname", columnList = "user_nickname")
+        })
 @JsonIgnoreProperties({"password", "authorities", "enabled", "accountNonLocked", "accountNonExpired", "credentialsNonExpired"})
 public class User {
     @Id
@@ -20,19 +26,20 @@ public class User {
     @Setter(AccessLevel.NONE)
     @Column(name = "user_id", updatable = false)
     private Long userId;
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false, length = 50)
     private String name;
-    @Column(name = "user_surname")
+    @Column(name = "user_surname", nullable = false, length = 50)
     private String surname;
-    @Column(name = "user_nickname")
+    @Column(name = "user_nickname", nullable = false, length = 50)
     private String nickname;
-    @Column(name = "user_profilePicUrl", nullable = false, unique = true)
+    @Column(name = "user_profilePicUrl")
     private String profilePicUrl;
-    @Column(name = "user_email", unique = true)
+    @Column(name = "user_email", unique = true, nullable = false, length = 50)
     private String email;
-    @Column(name = "user_password", unique = true)
+    @Column(name = "user_password", nullable = false, length = 50)
     private String password;
     @Setter(AccessLevel.NONE)
+    @CreationTimestamp
     @Column(name = "creationDate", nullable = false)
     private LocalDate creationDate;
 
@@ -65,8 +72,21 @@ public class User {
         this.password = password;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        creationDate = LocalDate.now();
+    // Metodi utility (No Database)
+
+    public String getFullName() {
+        return name + " " + surname;
+    }
+
+    public boolean hasProfilePic() {
+        return profilePicUrl != null && !profilePicUrl.isEmpty();
+    }
+
+    public int getProjectCount() {
+        return createdProjects != null ? createdProjects.size() : 0;
+    }
+
+    public int getTaskAssignmentCount() {
+        return assignedTasks != null ? assignedTasks.size() : 0;
     }
 }

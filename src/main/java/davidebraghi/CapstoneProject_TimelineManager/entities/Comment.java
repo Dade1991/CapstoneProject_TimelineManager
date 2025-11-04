@@ -10,14 +10,20 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "comments")
+@AllArgsConstructor
+@Table(name = "comments",
+        indexes = {
+                @Index(name = "idx_comments_task", columnList = "taskId"),
+                @Index(name = "idx_comments_project", columnList = "projectId"),
+                @Index(name = "idx_comments_user", columnList = "userId")
+        })
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     @Column(name = "commentId")
     private Long commentId;
-    @Column(name = "commentText")
+    @Column(name = "commentText", columnDefinition = "TEXT")
     private String commentText;
     @Column(name = "createdAt", nullable = false)
     private LocalDate createdAt;

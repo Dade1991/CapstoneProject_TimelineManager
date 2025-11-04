@@ -10,7 +10,18 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "task_assignees")
+@AllArgsConstructor
+@Table(name = "task_assignees",
+        indexes = {
+                @Index(name = "idx_ta_task", columnList = "taskId"),
+                @Index(name = "idx_ta_user", columnList = "userId")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"taskId", "userId"},
+                        name = "uk_task_user_unique"
+                )
+        })
 public class Task_Assignee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,8 +29,11 @@ public class Task_Assignee {
     @Column(name = "task_assignees_id", updatable = false)
     private Long taskAssigneesId;
     @Setter(AccessLevel.NONE)
-    @Column(name = "creationDate", nullable = false)
+    @Column(name = "creationDate", nullable = false, updatable = false)
     private LocalDate creationDate;
+
+    // relazioni
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "taskId", nullable = false)
     private Task task;
@@ -27,14 +41,19 @@ public class Task_Assignee {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    public Task_Assignee(
-            LocalDate creationDate
-    ) {
-        this.creationDate = creationDate;
-    }
-
     @PrePersist
     protected void onCreate() {
         creationDate = LocalDate.now();
+    }
+
+    // Metodi utility
+
+    public String getFullDescription() {
+        return user.getNickname() + " assigned to " + task.getTaskTitle();
+    }
+
+    public boolean isSameAssignment(User otherUser, Task otherTask) {
+        return this.user.getUserId().equals(otherUser.getUserId()) &&
+                this.task.getTaskId().equals(otherTask.getTaskId());
     }
 }

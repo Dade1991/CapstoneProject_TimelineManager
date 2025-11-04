@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -13,7 +12,14 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "tasks")
+@AllArgsConstructor
+@Table(name = "tasks",
+        indexes = {
+                @Index(name = "idx_task_project", columnList = "projectId"),
+                @Index(name = "idx_task_status", columnList = "taskStatusId"),
+                @Index(name = "idx_task_priority", columnList = "task_priority"),
+                @Index(name = "idx_task_creator", columnList = "creatorUserId")
+        })
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +32,7 @@ public class Task {
     private String taskDescription;
     @Column(name = "task_priority")
     @Enumerated(EnumType.STRING)
-    private TaskPriorityENUM taskPriorityList;
+    private TaskPriorityENUM taskPriority;
     @Setter(AccessLevel.NONE)
     @Column(name = "createdAt", nullable = false)
     private LocalDate createdAt;
@@ -36,7 +42,7 @@ public class Task {
     @Column(name = "completedAt")
     private LocalDate completedAt;
     @Column(name = "expiryDate")
-    private LocalDate expiryDate;
+    private LocalDate taskExpiryDate;
 
     // relazioni
 
@@ -58,21 +64,12 @@ public class Task {
 
     public Task(String taskTitle,
                 String taskDescription,
-                TaskPriorityENUM taskPriorityList,
-                LocalDateTime taskCreatedAt,
-                LocalDateTime taskUpdatedAt,
-                LocalDateTime taskCompletedAt,
-                LocalDateTime taskExpiryDate,
-                Long projectId,
-                Long statusId,
-                Long userId) {
+                TaskPriorityENUM taskPriority,
+                LocalDate taskExpiryDate) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
-        this.taskPriorityList = taskPriorityList;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.completedAt = completedAt;
-        this.expiryDate = expiryDate;
+        this.taskPriority = taskPriority;
+        this.taskExpiryDate = taskExpiryDate;
     }
 
     @PrePersist
@@ -86,11 +83,32 @@ public class Task {
         updatedAt = LocalDate.now();
     }
 
+    // Metodi utility
+
     public boolean isCompleted() {
         return completedAt != null;
     }
 
     public boolean isOverdue() {
-        return expiryDate != null && expiryDate.isBefore(LocalDate.now()) && !isCompleted();
+        return taskExpiryDate != null &&
+                taskExpiryDate.isBefore(LocalDate.now()) &&
+                !isCompleted();
+    }
+
+    public boolean isAssignedTo(User user) {
+        return assignees.stream()
+                .anyMatch(ta -> ta.getUser().getUserId().equals(user.getUserId()));
+    }
+
+    public int getAssigneeCount() {
+        return assignees != null ? assignees.size() : 0;
+    }
+
+    public int getCommentCount() {
+        return comments != null ? comments.size() : 0;
+    }
+
+    public boolean canBeCompleted() {
+        return !isCompleted() && status != null;
     }
 }
