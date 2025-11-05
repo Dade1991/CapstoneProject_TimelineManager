@@ -11,18 +11,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "project_user_roles",
-        indexes = {
-                @Index(name = "idx_pur_project", columnList = "projectId"),
-                @Index(name = "idx_pur_user", columnList = "userId"),
-                @Index(name = "idx_pur_role", columnList = "roleId")
-        },
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        columnNames = {"projectId", "userId", "roleId"},
-                        name = "uk_project_user_role"
-                )
-        })
+@Table(name = "project_user_roles")
 public class Project_User_Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

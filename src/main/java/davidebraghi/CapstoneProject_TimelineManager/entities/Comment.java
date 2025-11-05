@@ -11,12 +11,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "comments",
-        indexes = {
-                @Index(name = "idx_comments_task", columnList = "taskId"),
-                @Index(name = "idx_comments_project", columnList = "projectId"),
-                @Index(name = "idx_comments_user", columnList = "userId")
-        })
+@Table(name = "comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

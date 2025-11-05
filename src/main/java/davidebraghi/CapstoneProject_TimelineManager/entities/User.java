@@ -4,8 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -14,13 +18,9 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users",
-        indexes = {
-                @Index(name = "idx_users_email", columnList = "user_email"),
-                @Index(name = "idx_users_nickname", columnList = "user_nickname")
-        })
+@Table(name = "users")
 @JsonIgnoreProperties({"password", "authorities", "enabled", "accountNonLocked", "accountNonExpired", "credentialsNonExpired"})
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
@@ -30,7 +30,7 @@ public class User {
     private String name;
     @Column(name = "user_surname", nullable = false, length = 50)
     private String surname;
-    @Column(name = "user_nickname", nullable = false, length = 50)
+    @Column(name = "user_nickname", unique = true, nullable = false, length = 50)
     private String nickname;
     @Column(name = "user_profilePicUrl")
     private String profilePicUrl;
@@ -42,6 +42,8 @@ public class User {
     @CreationTimestamp
     @Column(name = "creationDate", nullable = false)
     private LocalDate creationDate;
+    @Column(name = "avatar_url", nullable = false, unique = true)
+    private String avatarURL;
 
     // relazioni
 
@@ -88,5 +90,25 @@ public class User {
 
     public int getTaskAssignmentCount() {
         return assignedTasks != null ? assignedTasks.size() : 0;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        // Ritorna la lista di autorità (ruoli)
+
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    // implementazioni di userDetails
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 }

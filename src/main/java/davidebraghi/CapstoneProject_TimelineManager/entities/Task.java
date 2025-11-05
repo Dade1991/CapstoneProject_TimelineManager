@@ -13,13 +13,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tasks",
-        indexes = {
-                @Index(name = "idx_task_project", columnList = "projectId"),
-                @Index(name = "idx_task_status", columnList = "taskStatusId"),
-                @Index(name = "idx_task_priority", columnList = "task_priority"),
-                @Index(name = "idx_task_creator", columnList = "creatorUserId")
-        })
+@Table(name = "tasks")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

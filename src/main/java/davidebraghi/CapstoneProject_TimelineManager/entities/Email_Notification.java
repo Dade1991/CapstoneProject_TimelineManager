@@ -13,12 +13,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "email_notifications",
-        indexes = {
-                @Index(name = "idx_email_user", columnList = "userId"),
-                @Index(name = "idx_email_status", columnList = "notificationStatus"),
-                @Index(name = "idx_email_type", columnList = "notification_type")
-        })
+@Table(name = "email_notifications")
 public class Email_Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

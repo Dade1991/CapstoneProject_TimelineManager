@@ -12,10 +12,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "projects",
-        indexes = {
-                @Index(name = "idx_project_creator", columnList = "creatorUserId")
-        })
+@Table(name = "projects")
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,17 +11,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "task_assignees",
-        indexes = {
-                @Index(name = "idx_ta_task", columnList = "taskId"),
-                @Index(name = "idx_ta_user", columnList = "userId")
-        },
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        columnNames = {"taskId", "userId"},
-                        name = "uk_task_user_unique"
-                )
-        })
+@Table(name = "task_assignees")
 public class Task_Assignee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

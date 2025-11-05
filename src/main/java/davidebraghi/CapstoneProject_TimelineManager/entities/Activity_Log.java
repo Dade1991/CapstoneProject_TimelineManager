@@ -15,12 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
-@Table(name = "activity_logs",
-        indexes = {
-                @Index(name = "idx_activity_user", columnList = "userId"),
-                @Index(name = "idx_activity_type", columnList = "activityType"),
-                @Index(name = "idx_activity_timestamp", columnList = "timestamp")
-        })
+@Table(name = "activity_logs")
 public class Activity_Log {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

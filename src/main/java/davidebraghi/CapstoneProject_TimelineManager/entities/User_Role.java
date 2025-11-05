@@ -12,10 +12,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_roles",
-        indexes = {
-                @Index(name = "idx_role_name", columnList = "roleName")
-        })
+@Table(name = "user_roles")
 public class User_Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +21,7 @@ public class User_Role {
     private Long roleId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "roleName", unique = true, nullable = false)
+    @Column(name = "roleName", nullable = false)
     private RoleNameENUM roleName;
 
     // relazioni
