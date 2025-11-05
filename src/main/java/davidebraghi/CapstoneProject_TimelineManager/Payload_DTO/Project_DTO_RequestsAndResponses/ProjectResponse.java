@@ -15,6 +15,9 @@ public record ProjectResponse(
         int taskCount,
         boolean isOverdue
 ) {
+
+    // converte la "projectEntity" in "projectResponse"
+
     public static ProjectResponse fromEntity(Project project) {
         return new ProjectResponse(
                 project.getProjectId(),

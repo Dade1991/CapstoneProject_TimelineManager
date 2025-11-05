@@ -4,10 +4,10 @@ import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
 import jakarta.validation.constraints.NotNull;
 
 public record ProjectAddMemberRequest(
-        @NotNull(message = "L'ID dell'utente è obbligatorio")
+        @NotNull(message = "User ID is mandatory.")
         Long userId,
 
-        @NotNull(message = "Il ruolo è obbligatorio")
+        @NotNull(message = "Role is mandatory.")
         RoleNameENUM roleName
 ) {
 }
