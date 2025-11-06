@@ -1,0 +1,137 @@
+package davidebraghi.CapstoneProject_TimelineManager.runners;
+
+import davidebraghi.CapstoneProject_TimelineManager.entities.Task_Status;
+import davidebraghi.CapstoneProject_TimelineManager.entities.User;
+import davidebraghi.CapstoneProject_TimelineManager.entities.User_Role;
+import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
+import davidebraghi.CapstoneProject_TimelineManager.enums.TaskStatusENUM;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.Task_StatusRepository;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.UserRepository;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.User_RoleRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+@Component
+@Slf4j
+public class DataInitializer implements CommandLineRunner {
+
+    @Autowired
+    private Task_StatusRepository task_statusRepository;
+    @Autowired
+    private User_RoleRepository user_roleRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder bcrypt;
+
+    // primo entry point eseguito al primo avvio dell'app
+
+    @Override
+    public void run(String... args) throws Exception {
+
+        // inizializzo gli status per non creare errori all'avvio
+
+        initializeTaskStatuses();
+
+        // inizializzo gli User_Role per non creare errori all'avvio
+
+        initializeUserRoles();
+
+        // inizializzo gli user per TESTING (eventuale implentazione di Test dedicati nell'apposita sezione)
+
+        initializeUsers();
+
+    }
+
+    private void initializeTaskStatuses() {
+        if (task_statusRepository.count() == 0) {
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.TODO, 1));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.IN_PROGRESS, 2));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.IN_REVIEW, 3));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.UNDER_QA_QC_REVIEW, 4));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.PAUSED_OR_BLOCKED, 5));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.COMPLETED, 6));
+        } else {
+            task_statusRepository.count();
+        }
+    }
+
+
+    private void initializeUserRoles() {
+        if (user_roleRepository.count() == 0) {
+            user_roleRepository.save(new User_Role(RoleNameENUM.ADMIN));
+            user_roleRepository.save(new User_Role(RoleNameENUM.MANAGER));
+            user_roleRepository.save(new User_Role(RoleNameENUM.USER));
+            user_roleRepository.save(new User_Role(RoleNameENUM.GUEST));
+        } else {
+            user_roleRepository.count();
+        }
+    }
+
+    private void initializeUsers() {
+
+        // ----------------- ADMIN USER -----------------
+
+        createUserIfNotExists(
+                "davideB@demo.com",
+                "admin",
+                "Davide",
+                "Braghi",
+                "admin1234"
+        );
+
+        // ----------------- TEST USER 1 -----------------
+
+        createUserIfNotExists(
+                "claraS@demo.com",
+                "user1",
+                "Clara",
+                "Schillaci",
+                "user1234"
+        );
+
+        // ----------------- TEST USER 2 -----------------
+
+        createUserIfNotExists(
+                "riccardoM@demo.com",
+                "user2",
+                "Riccardo",
+                "Marra",
+                "user1234"
+        );
+
+        // ----------------- TEST USER 3 -----------------
+        
+        createUserIfNotExists(
+                "tizianaB@demo.com",
+                "user3",
+                "Tiziana",
+                "Biciocchi",
+                "user1234"
+        );
+    }
+
+    private void createUserIfNotExists(String email,
+                                       String nickname,
+                                       String name,
+                                       String surname,
+                                       String password
+    ) {
+        if (userRepository.findByEmail(email).isEmpty()) {
+
+            User user = new User();
+
+            user.setEmail(email);
+            user.setNickname(nickname);
+            user.setName(name);
+            user.setSurname(surname);
+            user.setPassword(bcrypt.encode(password));
+            user.setAvatarUrl("https://ui-avatars.com/api/?name=" + name + "+" + surname);
+
+            userRepository.save(user);
+        }
+    }
+}
