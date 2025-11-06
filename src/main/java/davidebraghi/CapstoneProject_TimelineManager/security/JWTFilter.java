@@ -74,6 +74,6 @@ public class JWTFilter extends OncePerRequestFilter {
         // salvo in una variabile
 
         String path = request.getServletPath();
-        return new AntPathMatcher().match("/auth/**", path);
+        return new AntPathMatcher().match("/api/auth/**", path);
     }
 }

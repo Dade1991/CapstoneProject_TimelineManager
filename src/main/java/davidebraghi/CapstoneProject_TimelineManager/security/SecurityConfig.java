@@ -25,18 +25,32 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         // Disabilitare form login (usiamo JWT)
+
         httpSecurity.formLogin(formLogin -> formLogin.disable());
 
         // Disabilitare CSRF (non necessario per JWT stateless)
+
         httpSecurity.csrf(csrf -> csrf.disable());
 
         // Configurare sessioni STATELESS (JWT non usa sessioni)
+
         httpSecurity.sessionManagement(sessions ->
                 sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
         // Abilitare CORS per collegamento FRONT_END
+
         httpSecurity.cors(Customizer.withDefaults());
+
+        httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+
+        httpSecurity.authorizeHttpRequests(auth -> auth.
+                requestMatchers("/api/auth/**").permitAll().
+                requestMatchers("/api/auth/login").permitAll().
+                requestMatchers("/api/auth/signup").permitAll().
+                anyRequest().
+                authenticated()
+        );
 
         return httpSecurity.build();
     }

@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private String nickname;
     @Column(name = "user_email", unique = true, nullable = false, length = 50)
     private String email;
-    @Column(name = "user_password", nullable = false, length = 50)
+    @Column(name = "user_password", nullable = false, length = 100)
     private String password;
     @Setter(AccessLevel.NONE)
     @CreationTimestamp
