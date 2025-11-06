@@ -139,7 +139,7 @@ public class TaskService {
 
     // FIND_BY_ID_AND_DELETE
 
-    public void deleteTask(Long taskId) {
+    public void findTaskByIdAndDelete(Long taskId) {
 
         Task foundTask = findTaskById(taskId);
 
