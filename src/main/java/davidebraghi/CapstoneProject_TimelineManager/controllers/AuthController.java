@@ -15,18 +15,22 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // POST - login
+    // POST - login - http://localhost:3001/api/auth/login
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody UserLoginRequest payload) {
+    public AuthResponse login(
+            @RequestBody UserLoginRequest payload
+    ) {
         return authService.login(payload);
     }
 
-    // POST - signup
+    // POST - signup - http://localhost:3001/api/auth/signup
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse signup(@RequestBody SignupRequest payload) {
+    public AuthResponse signup(
+            @RequestBody SignupRequest payload
+    ) {
         return authService.signup(payload);
     }
 }

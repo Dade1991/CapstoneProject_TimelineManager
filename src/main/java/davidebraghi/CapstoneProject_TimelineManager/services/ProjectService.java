@@ -82,14 +82,14 @@ public class ProjectService {
 
     // FIND_ALL_PROJECT_BY_CREATOR_USER
 
-    public List<Project> findProjectsByCreatorId(Long userId) {
+    public List<Project> findProjectsByCreatorId(Long creatorId) {
         return this.projectRepository.
-                findByCreator_UserId(userId);
+                findByCreator_UserId(creatorId);
     }
 
     // FIND_BY_ID_AND_UPDATE
 
-    public Project findProjectByIdAndUpdate(Long projectId, ProjectUpdateRequest payload, Long userId) {
+    public Project findProjectByIdAndUpdate(Long projectId, ProjectUpdateRequest payload) {
 
         Project foundProject = findProjectById(projectId);
 
@@ -108,7 +108,7 @@ public class ProjectService {
 
     // FIND_BY_ID_AND_DELETE
 
-    public void deleteProject(Long projectId) {
+    public void findProjectByIdAndDelete(Long projectId) {
 
         Project foundProject = findProjectById(projectId);
 
