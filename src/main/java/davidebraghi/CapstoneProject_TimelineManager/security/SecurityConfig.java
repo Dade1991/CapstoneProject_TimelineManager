@@ -57,6 +57,7 @@ public class SecurityConfig {
     }
 
     // Bcrypt per la sicurezza delle password per gli utenti
+
     @Bean
     public PasswordEncoder getBcrypt() {
         return new BCryptPasswordEncoder(12);

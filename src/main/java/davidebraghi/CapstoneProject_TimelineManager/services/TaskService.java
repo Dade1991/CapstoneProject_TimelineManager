@@ -97,7 +97,7 @@ public class TaskService {
     // FIND_BY_STATUS
 
     public List<Task> findTaskByStatus(Long statusId) {
-        return this.taskRepository.findByStatus_StatusId(statusId);
+        return this.taskRepository.findByStatus_TaskStatusId(statusId);
     }
 
     // FIND_BY_ASSIGNEE

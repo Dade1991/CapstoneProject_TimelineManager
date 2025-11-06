@@ -32,8 +32,6 @@ public class User implements UserDetails {
     private String surname;
     @Column(name = "user_nickname", unique = true, nullable = false, length = 50)
     private String nickname;
-    @Column(name = "user_profilePicUrl")
-    private String profilePicUrl;
     @Column(name = "user_email", unique = true, nullable = false, length = 50)
     private String email;
     @Column(name = "user_password", nullable = false, length = 50)
@@ -42,7 +40,7 @@ public class User implements UserDetails {
     @CreationTimestamp
     @Column(name = "creationDate", nullable = false)
     private LocalDate creationDate;
-    @Column(name = "avatar_url", nullable = false, unique = true)
+    @Column(name = "avatar_url", nullable = true)
     private String avatarURL;
 
     // relazioni
@@ -80,8 +78,8 @@ public class User implements UserDetails {
         return name + " " + surname;
     }
 
-    public boolean hasProfilePic() {
-        return profilePicUrl != null && !profilePicUrl.isEmpty();
+    public boolean hasAvatarProfilePic() {
+        return avatarURL != null && !avatarURL.isEmpty();
     }
 
     public int getProjectCount() {

@@ -71,7 +71,7 @@ public class UserService {
 
         // upload della imageUrl
 
-        newUser.setProfilePicUrl("https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname());
+        newUser.setAvatarURL("https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname());
 
         User savedUser = userRepository.save(newUser);
         log.info("User with ID " + savedUser.getUserId() + " successfully registered.");

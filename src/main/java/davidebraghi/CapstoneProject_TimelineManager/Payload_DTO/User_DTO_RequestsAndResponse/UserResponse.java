@@ -18,7 +18,7 @@ public record UserResponse(Long userId,
                 user.getName(),
                 user.getSurname(),
                 user.getNickname(),
-                user.getProfilePicUrl(),
+                user.getAvatarURL(),
                 user.getEmail(),
                 user.getCreationDate()
         );
