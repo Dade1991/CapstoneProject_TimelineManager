@@ -4,7 +4,6 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.services.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,24 +33,43 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // verifica della header authorization
 
+        System.out.println("[JWTFilter] Intercepted: " + request.getServletPath());
+
         try {
             String authHeader = request.getHeader("Authorization");
+
+            System.out.println("[JWTFilter] Authorization header: " + authHeader);
+
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new UnavailableException("Insert the token in the 'authorization' header - Used format: Bearer <token>");
+
+                System.out.println("[JWTFilter] No Bearer token found, continuing without auth");
+
+                filterChain.doFilter(request, response);
+
+                return;
             }
 
             // estrazione e verifica del token
 
             String accessToken = authHeader.replace("Bearer ", "");
+
+            System.out.println("[JWTFilter] Token extracted (first 50 chars): " + accessToken.substring(0, Math.min(50, accessToken.length())));
+
             jwtTools.verifyToken(accessToken);
+
+            System.out.println("[JWTFilter] Token verified successfully");
 
             // estrazione userId dal token
 
             Long userId = jwtTools.exctractIdFromToken(accessToken);
 
+            System.out.println("[JWTFilter] User ID extracted: " + userId);
+
             // ricerca dello user nel DB
 
             User foundUser = this.userService.findUserById(userId);
+
+            System.out.println("[JWTFilter] User found: " + foundUser.getEmail());
 
             // Creazione dell'authentication token
 
@@ -60,10 +78,15 @@ public class JWTFilter extends OncePerRequestFilter {
             // impostazione dell'authentication nel security context
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
+
+            System.out.println("✅ [JWTFilter] Authentication set in context");
+
         } catch (RuntimeException ex) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            System.err.println("[JWTFilter] Error: " + ex.getMessage());
+            ex.printStackTrace();
         }
+
+        filterChain.doFilter(request, response);
     }
 
     // eclusione di alcuni filtri JWT per determinati end-points
@@ -73,7 +96,15 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // salvo in una variabile
 
+//        String path = request.getServletPath();
+//        return new AntPathMatcher().match("/api/auth/**", path);
+
         String path = request.getServletPath();
-        return new AntPathMatcher().match("/api/auth/**", path);
+        boolean shouldSkip = new AntPathMatcher().match("/api/auth/**", path);
+        System.out.println("[JWTFilter] Path: " + path + " -> Skip: " + shouldSkip);
+        return shouldSkip;
     }
 }
+
+
+// CHECK DI TUTTI SYSTEM.OUT.PRINTLN -------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

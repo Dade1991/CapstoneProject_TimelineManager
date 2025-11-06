@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -22,7 +23,7 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JWTFilter jwtFilter) throws Exception {
 
         // Disabilitare form login (usiamo JWT)
 
@@ -44,10 +45,10 @@ public class SecurityConfig {
 
         httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 
+        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         httpSecurity.authorizeHttpRequests(auth -> auth.
                 requestMatchers("/api/auth/**").permitAll().
-                requestMatchers("/api/auth/login").permitAll().
-                requestMatchers("/api/auth/signup").permitAll().
                 anyRequest().
                 authenticated()
         );
