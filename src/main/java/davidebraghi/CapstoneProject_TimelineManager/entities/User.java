@@ -41,7 +41,7 @@ public class User implements UserDetails {
     @Column(name = "creationDate", nullable = false)
     private LocalDate creationDate;
     @Column(name = "avatar_url", nullable = true)
-    private String avatarURL;
+    private String avatarUrl;
 
     // relazioni
 
@@ -79,7 +79,7 @@ public class User implements UserDetails {
     }
 
     public boolean hasAvatarProfilePic() {
-        return avatarURL != null && !avatarURL.isEmpty();
+        return avatarUrl != null && !avatarUrl.isEmpty();
     }
 
     public int getProjectCount() {

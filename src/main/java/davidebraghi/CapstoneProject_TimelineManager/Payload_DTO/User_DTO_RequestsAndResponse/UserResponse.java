@@ -8,9 +8,9 @@ public record UserResponse(Long userId,
                            String name,
                            String surname,
                            String nickname,
-                           String profilePicUrl,
                            String email,
-                           LocalDate creationDate
+                           LocalDate creationDate,
+                           String avatarUrl
 ) {
     public static UserResponse fromEntity(User user) {
         return new UserResponse(
@@ -18,9 +18,9 @@ public record UserResponse(Long userId,
                 user.getName(),
                 user.getSurname(),
                 user.getNickname(),
-                user.getAvatarURL(),
                 user.getEmail(),
-                user.getCreationDate()
+                user.getCreationDate(),
+                user.getAvatarUrl()
         );
     }
 }

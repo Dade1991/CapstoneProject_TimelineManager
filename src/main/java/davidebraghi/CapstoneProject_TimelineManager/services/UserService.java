@@ -3,6 +3,7 @@ package davidebraghi.CapstoneProject_TimelineManager.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserRegisterRequest;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserUpdateProfileRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
@@ -71,7 +72,7 @@ public class UserService {
 
         // upload della imageUrl
 
-        newUser.setAvatarURL("https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname());
+        newUser.setAvatarUrl("https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname());
 
         User savedUser = userRepository.save(newUser);
         log.info("User with ID " + savedUser.getUserId() + " successfully registered.");
@@ -102,7 +103,7 @@ public class UserService {
 
     // FIND_BY_ID_AND_UPDATE
 
-    public User findUserByIdAndUpdate(Long userId, UserRegisterRequest payload) {
+    public User findUserByIdAndUpdate(Long userId, UserUpdateProfileRequest payload) {
         User foundUser = this.findUserById(userId);
 
         if (!foundUser.getEmail().equals(payload.email())) {
@@ -151,7 +152,7 @@ public class UserService {
 
             // salvataggio dell'imageUrL
 
-            foundUser.setAvatarURL(imageUrl);
+            foundUser.setAvatarUrl(imageUrl);
             this.userRepository.save(foundUser);
             return foundUser;
         } catch (Exception ex) {

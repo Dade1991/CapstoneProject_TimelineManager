@@ -76,7 +76,7 @@ public class TaskController {
 
     // GET - ricerca i tasks per progetto - http://localhost:3001/api/tasks/project/{projectId}
 
-    @GetMapping("/projectId/{projectId}")
+    @GetMapping("/project/{projectId}")
     public List<Task> getAllTasksByProject(
             @PathVariable Long projectId
     ) {
@@ -117,7 +117,7 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}/assignees/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeAssignUserToTask(
+    public void removeUserFromTask(
             @PathVariable Long taskId,
             @PathVariable Long userId
     ) {

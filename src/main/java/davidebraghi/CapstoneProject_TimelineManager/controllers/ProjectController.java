@@ -110,7 +110,7 @@ public class ProjectController {
 
     // PUT - cambiare il ruolo ad uno specifico user - http://localhost:3001/api/projects/{projectId}/members/{userId}/role
 
-    @PutMapping("{projectId}/members/{userId}/role")
+    @PutMapping("/{projectId}/members/{userId}/role")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void changeUserRole(
             @PathVariable Long projectId,
@@ -122,7 +122,7 @@ public class ProjectController {
 
     // GET - cerca tutti gli users di uno specifico progetto - http://localhost:3001/api/projects/{projectId}/members
 
-    @GetMapping("{projectId}/members")
+    @GetMapping("/{projectId}/members")
     public List<Project_User_Role> getProjectMembers(
             @PathVariable Long projectId
     ) {
