@@ -20,7 +20,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     // cerca i task in uno specifico status
 
-    List<Task> findByStatus_TaskStatusId(Long taskStatusId);
+    List<Task> findByStatus_StatusId(Long statusId);
 
     // cerca i task non completati
 

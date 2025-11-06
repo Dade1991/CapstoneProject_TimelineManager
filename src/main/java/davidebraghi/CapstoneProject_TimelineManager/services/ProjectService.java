@@ -54,7 +54,6 @@ public class ProjectService {
     // SAVE
 
     public Project createProject(ProjectCreateRequest payload, Long creatorId) {
-        log.info("Creazione progetto per creatore: {}", creatorId);
 
         User foundCreator = userService.findUserById(creatorId);
 
@@ -78,7 +77,7 @@ public class ProjectService {
     public Project findProjectById(Long projectId) {
         return this.projectRepository.
                 findById(projectId).
-                orElseThrow(() -> new NotFoundException("Progetto con ID " + projectId + " non trovato"));
+                orElseThrow(() -> new NotFoundException("Project with ID " + projectId + " has not been found."));
     }
 
     // FIND_ALL_PROJECT_BY_CREATOR_USER
@@ -110,6 +109,7 @@ public class ProjectService {
     // FIND_BY_ID_AND_DELETE
 
     public void deleteProject(Long projectId) {
+
         Project foundProject = findProjectById(projectId);
 
         this.projectRepository.delete(foundProject);
@@ -195,7 +195,7 @@ public class ProjectService {
 
         User_Role userRole = user_roleRepository
                 .findByRoleName(roleName)
-                .orElseThrow(() -> new NotFoundException("Ruolo non trovato"));
+                .orElseThrow(() -> new NotFoundException("Role not found."));
 
         // crea la relazione
 
