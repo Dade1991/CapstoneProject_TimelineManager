@@ -14,9 +14,6 @@ public record UserUpdateProfileRequest(
         String nickname,
 
         @Email(message = "The email is not in the correct format.")
-        String email,
-
-        @Size(min = 8, max = 100, message = "Password should have 8 to 100 characters.")
-        String password
+        String email
 ) {
 }

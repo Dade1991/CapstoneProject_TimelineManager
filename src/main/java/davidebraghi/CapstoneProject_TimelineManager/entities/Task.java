@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 import jakarta.persistence.*;
 import lombok.*;
@@ -50,6 +51,7 @@ public class Task {
     @JoinColumn(name = "creatorUserId", nullable = false)
     private User creator;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<Task_Assignee> assignees;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> comments;

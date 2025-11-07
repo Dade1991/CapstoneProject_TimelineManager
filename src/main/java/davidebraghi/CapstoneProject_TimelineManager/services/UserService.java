@@ -2,6 +2,7 @@ package davidebraghi.CapstoneProject_TimelineManager.services;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserChangePasswordRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserRegisterRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserUpdateProfileRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
@@ -116,13 +117,29 @@ public class UserService {
         foundUser.setSurname(payload.surname());
         foundUser.setNickname(payload.nickname());
         foundUser.setEmail(payload.email());
-        foundUser.setPassword(payload.password());
 
         User modifiedUser = this.userRepository.save(foundUser);
 
         log.info("User with ID " + foundUser.getUserId() + " successfully updated.");
 
         return modifiedUser;
+    }
+
+    // FIND_BY_ID_AND_UPDATE_PASSWORD
+
+    public void changePassword(Long userId, UserChangePasswordRequest payload) {
+        User foundUser = this.findUserById(userId);
+
+        // verifica Old password
+
+        if (!bcrypt.matches(payload.oldPassword(), foundUser.getPassword())) {
+            throw new BadRequestException("Old password is incorrect.");
+        }
+
+        // salva New password
+
+        foundUser.setPassword(bcrypt.encode(payload.newPassword()));
+        userRepository.save(foundUser);
     }
 
     // FIND_BY_ID_AND_DELETE

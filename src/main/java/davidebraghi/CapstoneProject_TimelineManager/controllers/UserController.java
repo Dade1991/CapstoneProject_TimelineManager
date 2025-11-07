@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.controllers;
 
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserChangePasswordRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserUpdateProfileRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
@@ -70,6 +71,24 @@ public class UserController {
                     toList());
         }
         return userService.findUserByIdAndUpdate(userId, payload);
+    }
+
+    // PUT - FIND_BY_ID_AND_UPDATE_PASSWORD - http://localhost:3001/api/users/{userId}/password
+
+    @PutMapping("/{userId}/password")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void changePassword(
+            @PathVariable Long userId,
+            @RequestBody @Validated UserChangePasswordRequest payload,
+            BindingResult validationResult
+    ) {
+        if (validationResult.hasErrors()) {
+            throw new ValidationException(validationResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
+        userService.changePassword(userId, payload);
     }
 
     // DELETE - FIND_BY_ID_AND_DELETE - http://localhost:3001/api/users/{userId}

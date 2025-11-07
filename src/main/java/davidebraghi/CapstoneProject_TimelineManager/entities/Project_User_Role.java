@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,7 @@ public class Project_User_Role {
     private User user;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roleId", nullable = false)
+    @JsonIgnore
     private User_Role role;
 
     @PrePersist
