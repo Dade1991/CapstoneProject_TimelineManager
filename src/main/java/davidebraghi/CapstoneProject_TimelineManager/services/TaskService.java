@@ -1,6 +1,5 @@
 package davidebraghi.CapstoneProject_TimelineManager.services;
 
-
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskCreateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.*;
@@ -135,6 +134,10 @@ public class TaskService {
         }
 
         return this.taskRepository.save(foundTask);
+    }
+
+    public Task saveTaskChanges(Task task) {
+        return taskRepository.save(task);
     }
 
     // FIND_BY_ID_AND_DELETE

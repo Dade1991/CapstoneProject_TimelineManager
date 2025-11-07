@@ -1,6 +1,7 @@
 package davidebraghi.CapstoneProject_TimelineManager.controllers;
 
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskCreateRequest;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
@@ -65,10 +66,11 @@ public class TaskController {
 
     @PutMapping("/{taskId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public Task getTaskByIdAndUpdate(
+    public TaskResponse getTaskByIdAndUpdate(
             @PathVariable Long taskId,
             @RequestBody @Validated TaskUpdateRequest payload,
-            BindingResult validationResult
+            BindingResult validationResult,
+            @AuthenticationPrincipal User currentUser
     ) {
         if (validationResult.hasErrors()) {
             throw new ValidationException(validationResult.getFieldErrors().
@@ -76,7 +78,10 @@ public class TaskController {
                     map(fieldError -> fieldError.getDefaultMessage()).
                     toList());
         }
-        return taskService.findTaskByIdAndUpdate(taskId, payload);
+        Task updatedTask = taskService.findTaskByIdAndUpdate(taskId, payload);
+        updatedTask.setLastModifiedBy(currentUser);
+        updatedTask = taskService.saveTaskChanges(updatedTask);
+        return TaskResponse.fromEntity(updatedTask);
     }
 
     // DELETE - FIND_BY_ID_AND_DELETE - http://localhost:3001/api/tasks/{taskId}

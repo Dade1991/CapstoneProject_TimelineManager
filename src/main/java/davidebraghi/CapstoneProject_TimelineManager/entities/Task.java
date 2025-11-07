@@ -43,19 +43,28 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "projectId", nullable = false)
+    @JsonIgnore
     private Project project;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "taskStatusId", nullable = false)
+    @JsonIgnore
     private Task_Status status;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "creatorUserId", nullable = false)
+    @JsonIgnore
     private User creator;
+    @ManyToOne
+    @JoinColumn(name = "last_modified_by_id")
+    @JsonIgnore
+    private User lastModifiedBy;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<Task_Assignee> assignees;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<Comment> comments;
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
     private List<Activity_Log> activities;
 
     public Task(String taskTitle,
