@@ -4,11 +4,14 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_Request
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
+import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,9 +48,16 @@ public class TaskController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Task createTask(
-            @RequestBody TaskCreateRequest payload,
+            @RequestBody @Validated TaskCreateRequest payload,
+            BindingResult validationResult,
             @AuthenticationPrincipal User creator
     ) {
+        if (validationResult.hasErrors()) {
+            throw new ValidationException(validationResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
         return taskService.createTask(payload, creator.getUserId());
     }
 
@@ -57,8 +67,15 @@ public class TaskController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Task getTaskByIdAndUpdate(
             @PathVariable Long taskId,
-            @RequestBody TaskUpdateRequest payload
+            @RequestBody @Validated TaskUpdateRequest payload,
+            BindingResult validationResult
     ) {
+        if (validationResult.hasErrors()) {
+            throw new ValidationException(validationResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
         return taskService.findTaskByIdAndUpdate(taskId, payload);
     }
 
@@ -106,11 +123,11 @@ public class TaskController {
 
     @PostMapping("/{taskId}/assignees/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void assignUserToTask(
+    public Task assignUserToTask(
             @PathVariable Long taskId,
             @PathVariable Long userId
     ) {
-        taskService.assignUserToTask(taskId, userId);
+        return taskService.assignUserToTask(taskId, userId);
     }
 
     // DELETE - REMOVE USER FROM TASK - http://localhost:3001/api/tasks/{taskId}/assignees/{userId}

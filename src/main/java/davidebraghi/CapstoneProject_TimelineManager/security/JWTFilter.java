@@ -42,7 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 
-                System.out.println("[JWTFilter] No Bearer token found, continuing without auth");
+                System.out.println("[JWTFilter] No Bearer token found, continuing without authorization");
 
                 filterChain.doFilter(request, response);
 
@@ -69,7 +69,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             User foundUser = this.userService.findUserById(userId);
 
-            System.out.println("[JWTFilter] User found: " + foundUser.getEmail());
+            System.out.println("[JWTFilter] User email found: " + foundUser.getEmail());
 
             // Creazione dell'authentication token
 
@@ -79,7 +79,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            System.out.println("✅ [JWTFilter] Authentication set in context");
+            System.out.println("[JWTFilter] Authentication set");
 
         } catch (RuntimeException ex) {
             System.err.println("[JWTFilter] Error: " + ex.getMessage());

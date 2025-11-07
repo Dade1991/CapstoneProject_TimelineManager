@@ -2,10 +2,13 @@ package davidebraghi.CapstoneProject_TimelineManager.controllers;
 
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserUpdateProfileRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
+import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,11 +45,11 @@ public class UserController {
         return userService.findUserByNickname(nickname);
     }
 
-    // GET - FIND_BY_EMAIL - http://localhost:3001/api/users/email/{email}
+    // GET - FIND_BY_EMAIL - http://localhost:3001/api/users/email
 
-    @GetMapping("/email/{email}")
+    @GetMapping("/email")
     public User getUserByEmail(
-            @PathVariable String email
+            @RequestParam String email
     ) {
         return userService.findUserByEmail(email);
     }
@@ -57,8 +60,15 @@ public class UserController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public User findUserByIdAndUpdate(
             @PathVariable Long userId,
-            @RequestBody UserUpdateProfileRequest payload
+            @RequestBody @Validated UserUpdateProfileRequest payload,
+            BindingResult validationResult
     ) {
+        if (validationResult.hasErrors()) {
+            throw new ValidationException(validationResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
         return userService.findUserByIdAndUpdate(userId, payload);
     }
 

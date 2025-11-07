@@ -148,7 +148,7 @@ public class TaskService {
 
     // ASSIGN USER TO TASK
 
-    public void assignUserToTask(Long taskId, Long userId) {
+    public Task assignUserToTask(Long taskId, Long userId) {
 
         Task foundTask = findTaskById(taskId);
 
@@ -163,6 +163,7 @@ public class TaskService {
         assignee.setUser(foundUser);
 
         task_assigneeRepository.save(assignee);
+        return foundTask;
     }
 
     // REMOVE USER FROM TASK

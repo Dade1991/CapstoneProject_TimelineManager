@@ -6,11 +6,13 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project_User_Role;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
+import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +23,15 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+
+    // GET - FIND_ALL_PROJECT_BY_CREATOR_USER/CREATOR - http://localhost:3001/api/projects/creators/{creatorId}
+
+    @GetMapping("/creators/{creatorId}")
+    public List<Project> getProjectByCreatorId(
+            @PathVariable Long creatorId
+    ) {
+        return projectService.findProjectsByCreatorId(creatorId);
+    }
 
     // GET - FIND_ALL (paginato) - http://localhost:3001/api/projects
 
@@ -48,8 +59,15 @@ public class ProjectController {
     @ResponseStatus(HttpStatus.CREATED)
     public Project createProject(
             @RequestBody ProjectCreateRequest payload,
+            BindingResult validationResult,
             @AuthenticationPrincipal User creator
     ) {
+        if (validationResult.hasErrors()) {
+            throw new ValidationException(validationResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
         return projectService.createProject(payload, creator.getUserId());
     }
 
@@ -59,8 +77,15 @@ public class ProjectController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Project getProjectByIdAndUpdate(
             @PathVariable Long projectId,
-            @RequestBody ProjectUpdateRequest payload
+            @RequestBody ProjectUpdateRequest payload,
+            BindingResult validationResult
     ) {
+        if (validationResult.hasErrors()) {
+            throw new ValidationException(validationResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
         return projectService.findProjectByIdAndUpdate(projectId, payload);
     }
 
@@ -72,15 +97,6 @@ public class ProjectController {
             @PathVariable Long projectId
     ) {
         projectService.findProjectByIdAndDelete(projectId);
-    }
-
-    // GET - FIND_ALL_PROJECT_BY_CREATOR_USER/CREATOR - http://localhost:3001/api/projects/creators/{creatorId}
-
-    @GetMapping("/creators/{creatorId}")
-    public List<Project> getProjectByCreatorId(
-            @PathVariable Long creatorId
-    ) {
-        return projectService.findProjectsByCreatorId(creatorId);
     }
 
     // ---------------- GESTIONE MEMBRI DEL PROGETTO ----------------

@@ -3,9 +3,12 @@ package davidebraghi.CapstoneProject_TimelineManager.controllers;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.AuthResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Signup_DTO_RequestsAndResponses.SignupRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserLoginRequest;
+import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,8 +22,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse login(
-            @RequestBody UserLoginRequest payload
+            @RequestBody @Validated UserLoginRequest payload,
+            BindingResult validatedResult
     ) {
+        if (validatedResult.hasErrors()) {
+            throw new ValidationException(validatedResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
         return authService.login(payload);
     }
 
@@ -29,8 +39,15 @@ public class AuthController {
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse signup(
-            @RequestBody SignupRequest payload
+            @RequestBody @Validated SignupRequest payload,
+            BindingResult validationResult
     ) {
+        if (validationResult.hasErrors()) {
+            throw new ValidationException(validationResult.getFieldErrors().
+                    stream().
+                    map(fieldError -> fieldError.getDefaultMessage()).
+                    toList());
+        }
         return authService.signup(payload);
     }
 }
