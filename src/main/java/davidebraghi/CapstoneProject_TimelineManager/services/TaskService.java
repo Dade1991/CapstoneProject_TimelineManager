@@ -3,9 +3,11 @@ package davidebraghi.CapstoneProject_TimelineManager.services;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskCreateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.*;
+import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.ProjectRepository;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.Specifications.TaskSpecification;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.TaskRepository;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.Task_AssigneeRepository;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.Task_StatusRepository;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -107,6 +110,71 @@ public class TaskService {
                 stream().
                 map(Task_Assignee::getTask).
                 toList();
+    }
+
+    // FIND_WITH_SMART_FILTERS
+
+    public Page<Task> findTasksWithSmartFilters(
+            Long projectId,
+            Long statusId,
+            TaskPriorityENUM taskPriority,
+            Long assigneeId,
+            Boolean isCompleted,
+            Boolean isOverdue,
+            String search,
+            LocalDate createdAfter,
+            LocalDate createdBefore,
+            LocalDate expiryDateBefore,
+            LocalDate expiryDateAfter,
+            Long excludeStatusId,
+            TaskPriorityENUM excludePriority,
+            String createdWithinLast,
+            String expiringIn,
+            Boolean createdThisWeek,
+            Boolean createdThisMonth,
+            int pageNumber,
+            int pageSize,
+            String sortBy,
+            String sortDirection
+    ) {
+
+        // limita la dimensione della pagina a max 50
+
+        if (pageSize > 50) pageSize = 50;
+
+        // crea l'oggetto Sort
+
+        Sort.Direction direction = "DESC".equalsIgnoreCase(sortDirection)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortBy));
+
+        // crea la Specification con i filtri
+
+        Specification<Task> spec = TaskSpecification.buildSpecification(
+                projectId,
+                statusId,
+                taskPriority,
+                assigneeId,
+                isCompleted,
+                isOverdue,
+                search,
+                createdAfter,
+                createdBefore,
+                expiryDateBefore,
+                expiryDateAfter,
+                excludeStatusId,
+                excludePriority,
+                createdWithinLast,
+                expiringIn,
+                createdThisWeek,
+                createdThisMonth
+        );
+
+        // esegui la query con i filtri e la paginazione
+
+        return taskRepository.findAll(spec, pageable);
     }
 
     // FIND_BY_ID_AND_UPDATE

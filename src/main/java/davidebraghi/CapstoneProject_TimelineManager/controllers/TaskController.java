@@ -5,6 +5,7 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_Request
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
+import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -166,5 +168,65 @@ public class TaskController {
             @PathVariable Long taskId
     ) {
         return taskService.reopenCompletedTask(taskId);
+    }
+
+    // ---------------- FILTRI CUSTOM PER TASK ----------------
+
+    // GET - http://localhost:3001/api/tasks/search?parametri
+
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Page<TaskResponse> searchTasks(
+
+            // parametri che si aggiungeranno con @RequestParam alla stringa URL dopo "search" coem parte del path
+
+            @RequestParam(required = false) Long projectId,
+            @RequestParam(required = false) Long statusId,
+            @RequestParam(required = false) TaskPriorityENUM taskPriority,
+            @RequestParam(required = false) Long assigneeId,
+            @RequestParam(required = false) Boolean isCompleted,
+            @RequestParam(required = false) Boolean isOverdue,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) LocalDate createdAfter,
+            @RequestParam(required = false) LocalDate createdBefore,
+            @RequestParam(required = false) LocalDate expiryDateBefore,
+            @RequestParam(required = false) LocalDate expiryDateAfter,
+            @RequestParam(required = false) Long excludeStatusId,
+            @RequestParam(required = false) TaskPriorityENUM excludePriority,
+            @RequestParam(required = false) String createdWithinLast,
+            @RequestParam(required = false) String expiringIn,
+            @RequestParam(required = false) Boolean createdThisWeek,
+            @RequestParam(required = false) Boolean createdThisMonth,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "taskId") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection
+    ) {
+
+        Page<Task> tasksPage = taskService.findTasksWithSmartFilters(
+                projectId,
+                statusId,
+                taskPriority,
+                assigneeId,
+                isCompleted,
+                isOverdue,
+                search,
+                createdAfter,
+                createdBefore,
+                expiryDateBefore,
+                expiryDateAfter,
+                excludeStatusId,
+                excludePriority,
+                createdWithinLast,
+                expiringIn,
+                createdThisWeek,
+                createdThisMonth,
+                pageNumber,
+                pageSize,
+                sortBy,
+                sortDirection
+        );
+
+        return tasksPage.map(TaskResponse::fromEntity);
     }
 }
