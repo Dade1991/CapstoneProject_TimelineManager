@@ -4,6 +4,8 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record TaskResponse(
         Long taskId,
@@ -23,12 +25,21 @@ public record TaskResponse(
         int assigneeCount,
         int commentCount,
         boolean isCompleted,
-        boolean isOverdue
+        boolean isOverdue,
+        Set<String> categories
 ) {
 
     // converte la "taskEntity" in "taskResponse"
 
     public static TaskResponse fromEntity(Task task) {
+
+        Set<String> categoryNames = task.getCategories() != null ?
+                task.getCategories().
+                        stream().
+                        map(category -> category.getCategoryName()).
+                        collect(Collectors.toSet()) :
+                Set.of();
+
         return new TaskResponse(
                 task.getTaskId(),
                 task.getTaskTitle(),
@@ -47,7 +58,8 @@ public record TaskResponse(
                 task.getAssigneeCount(),
                 task.getCommentCount(),
                 task.isCompleted(),
-                task.isOverdue()
+                task.isOverdue(),
+                categoryNames
         );
     }
 }

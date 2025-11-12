@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public record TaskCreateRequest(
         @NotBlank(message = "Task title is mandatory.")
@@ -26,6 +27,8 @@ public record TaskCreateRequest(
         Long statusId,
 
         @Future(message = "Expiry date shall be in future.")
-        LocalDate taskExpiryDate
+        LocalDate taskExpiryDate,
+
+        Set<Long> categoryIds
 ) {
 }

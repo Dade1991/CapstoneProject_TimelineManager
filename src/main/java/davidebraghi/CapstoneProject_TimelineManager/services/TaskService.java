@@ -6,11 +6,8 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.*;
 import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.ProjectRepository;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.*;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.Specifications.TaskSpecification;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.TaskRepository;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.Task_AssigneeRepository;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.Task_StatusRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,6 +36,8 @@ public class TaskService {
     private ProjectRepository projectRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     // FIND_ALL (paginato)
 
@@ -75,6 +76,14 @@ public class TaskService {
         task.setCreator(foundCreator);
         task.setProject(foundProject);
         task.setStatus(foundStatus);
+
+        if (payload.categoryIds() != null && !payload.categoryIds().isEmpty()) {
+            Set<Category> categories = payload.categoryIds().
+                    stream().
+                    map(id -> categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category with ID " + id + " has not been found."))).
+                    collect(Collectors.toSet());
+            task.setCategories(categories);
+        }
 
         Task savedTask = taskRepository.save(task);
 
@@ -132,6 +141,7 @@ public class TaskService {
             String expiringIn,
             Boolean createdThisWeek,
             Boolean createdThisMonth,
+            List<Long> categoryIds,
             int pageNumber,
             int pageSize,
             String sortBy,
@@ -149,6 +159,12 @@ public class TaskService {
                 : Sort.Direction.ASC;
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortBy));
+
+        // se ci sono CategoryIds, chiama il metodo custom
+
+        if (categoryIds != null && !categoryIds.isEmpty()) {
+            return taskRepository.findDistinctByCategories_CategoryIdIn(categoryIds, pageable);
+        }
 
         // crea la Specification con i filtri
 
@@ -199,6 +215,13 @@ public class TaskService {
         }
         if (payload.taskExpiryDate() != null) {
             foundTask.setTaskExpiryDate(payload.taskExpiryDate());
+        }
+        if (payload.categoryIds() != null) {
+            Set<Category> categories = payload.categoryIds().
+                    stream().
+                    map(id -> categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category with ID " + id + " not found."))).
+                    collect(Collectors.toSet());
+            foundTask.setCategories(categories);
         }
 
         return this.taskRepository.save(foundTask);

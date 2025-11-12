@@ -1,6 +1,8 @@
 package davidebraghi.CapstoneProject_TimelineManager.repositories;
 
 import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -50,4 +52,7 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     // conta quanti tasks non sono stati completati globalmente
 
     long countByCompletedAtIsNull();
+
+    // Metodo per filtrare task che appartengono a una delle categorie date
+    Page<Task> findDistinctByCategories_CategoryIdIn(List<Long> categoryIds, Pageable pageable);
 }

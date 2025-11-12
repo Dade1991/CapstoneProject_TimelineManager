@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public record TaskUpdateRequest(
         @Size(min = 3, max = 100, message = "Task title should have 3 to 100 characters.")
@@ -18,6 +19,8 @@ public record TaskUpdateRequest(
         Long statusId,
 
         @Future(message = "Expiry date shall be in future.")
-        LocalDate taskExpiryDate
+        LocalDate taskExpiryDate,
+
+        Set<Long> categoryIds
 ) {
 }

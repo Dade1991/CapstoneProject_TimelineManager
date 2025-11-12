@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -66,6 +68,14 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<Activity_Log> activities;
+    @ManyToMany
+    @JoinTable(
+            name = "task_category",
+            joinColumns = @JoinColumn(name = "taskId"),
+            inverseJoinColumns = @JoinColumn(name = "categoryId")
+    )
+    @JsonIgnore
+    private Set<Category> categories = new HashSet<>();
 
     public Task(String taskTitle,
                 String taskDescription,
