@@ -104,12 +104,22 @@ public class DataInitializer implements CommandLineRunner {
         );
 
         // ----------------- TEST USER 3 -----------------
-        
+
         createUserIfNotExists(
                 "tizianaB@demo.com",
                 "user3",
                 "Tiziana",
                 "Biciocchi",
+                "user1234"
+        );
+
+        // ----------------- TEST USER 4 -----------------
+
+        createUserIfNotExists(
+                "eliaG@demo.com",
+                "user4",
+                "Elia",
+                "Guerci",
                 "user1234"
         );
     }
