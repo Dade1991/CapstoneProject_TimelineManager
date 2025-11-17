@@ -1,6 +1,7 @@
 package davidebraghi.CapstoneProject_TimelineManager.controllers;
 
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserChangePasswordRequest;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserUpdateProfileRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
@@ -21,45 +22,42 @@ public class UserController {
 
     // GET - FIND_BY_ID (profilo user loggato) - http://localhost:3001/api/users/me
 
-    @GetMapping("/me")
-    public User getPersonalProfile(
-            @AuthenticationPrincipal User userPersonalProfile
-    ) {
-        return userPersonalProfile;
+
+    @GetMapping("/profile")
+    public UserResponse getPersonalProfile(@AuthenticationPrincipal User user) {
+        System.out.println("[UserController] getPersonalProfile called for userId: " + user.getUserId());
+        return UserResponse.fromEntity(user);
     }
 
     // GET - FIND_BY_ID - http://localhost:3001/api/users/id/{userId}
 
     @GetMapping("/id/{userId}")
-    public User getUserById(
-            @PathVariable Long userId
-    ) {
-        return userService.findUserById(userId);
+    public UserResponse getUserById(@PathVariable Long userId) {
+        User user = userService.findUserById(userId);
+        return UserResponse.fromEntity(user);
     }
 
     // GET - FIND_BY_NICKNAME - http://localhost:3001/api/users/nickname/{nickname}
 
     @GetMapping("/nickname/{nickname}")
-    public User getUserByNickname(
-            @PathVariable String nickname
-    ) {
-        return userService.findUserByNickname(nickname);
+    public UserResponse getUserByNickname(@PathVariable String nickname) {
+        User user = userService.findUserByNickname(nickname);
+        return UserResponse.fromEntity(user);
     }
 
     // GET - FIND_BY_EMAIL - http://localhost:3001/api/users/email
 
     @GetMapping("/email")
-    public User getUserByEmail(
-            @RequestParam String email
-    ) {
-        return userService.findUserByEmail(email);
+    public UserResponse getUserByEmail(@RequestParam String email) {
+        User user = userService.findUserByEmail(email);
+        return UserResponse.fromEntity(user);
     }
 
     // PUT - FIND_BY_ID_AND_UPDATE - http://localhost:3001/api/users/{userId}
 
     @PutMapping("/{userId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public User findUserByIdAndUpdate(
+    public UserResponse findUserByIdAndUpdate(
             @PathVariable Long userId,
             @RequestBody @Validated UserUpdateProfileRequest payload,
             BindingResult validationResult
@@ -70,7 +68,8 @@ public class UserController {
                     map(fieldError -> fieldError.getDefaultMessage()).
                     toList());
         }
-        return userService.findUserByIdAndUpdate(userId, payload);
+        User updatedUser = userService.findUserByIdAndUpdate(userId, payload);
+        return UserResponse.fromEntity(updatedUser);
     }
 
     // PUT - FIND_BY_ID_AND_UPDATE_PASSWORD - http://localhost:3001/api/users/{userId}/password
