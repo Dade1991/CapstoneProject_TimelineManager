@@ -87,6 +87,16 @@ public class ProjectService {
                 findByCreator_UserId(creatorId);
     }
 
+    // FIND_ALL_PROJECT_BY_USER_ID (even if not creators)
+
+    public List<Project> findProjectsByUserId(Long userId) {
+        List<Project_User_Role> relations = project_user_roleRepository.findByUser_UserId(userId);
+        return relations.stream().
+                map(Project_User_Role::getProject).
+                distinct().
+                toList();
+    }
+
     // FIND_BY_ID_AND_UPDATE
 
     public Project findProjectByIdAndUpdate(Long projectId, ProjectUpdateRequest payload) {

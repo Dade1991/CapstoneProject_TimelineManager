@@ -1,10 +1,13 @@
 package davidebraghi.CapstoneProject_TimelineManager.controllers;
 
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserChangePasswordRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.User_DTO_RequestsAndResponse.UserUpdateProfileRequest;
+import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
+import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
 import davidebraghi.CapstoneProject_TimelineManager.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,12 +16,17 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProjectService projectService;
 
     // GET - FIND_BY_ID (profilo user loggato) - http://localhost:3001/api/users/me
 
@@ -98,5 +106,13 @@ public class UserController {
             @PathVariable Long userId
     ) {
         userService.findUserByIdAndDelete(userId);
+    }
+
+    @GetMapping("/{userId}/projects")
+    public List<ProjectResponse> getProjectsOfUser(@PathVariable Long userId) {
+        List<Project> projects = projectService.findProjectsByUserId(userId);
+        return projects.stream()
+                .map(ProjectResponse::fromEntity)
+                .toList();
     }
 }
