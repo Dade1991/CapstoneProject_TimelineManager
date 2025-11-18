@@ -6,6 +6,7 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_Req
 import davidebraghi.CapstoneProject_TimelineManager.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +21,14 @@ public class CategoryController {
     // GET - FIND_ALL - http://localhost:3001/api/categories
 
     @GetMapping
-    public List<CategoryResponse> getAllCategories() {
+    public List<CategoryResponse> getAllCategories(
+            @RequestParam(required = false) Long projectId
+    ) {
+        if (projectId != null) {
+            return categoryService.findCategoriesByProjectId(projectId);
+        }
         return categoryService.findAllCategories();
     }
-
     // GET - FIND_BY_ID - http://localhost:3001/api/categories/{categoriesId}
 
     @GetMapping("/{categoryId}")
@@ -38,7 +43,7 @@ public class CategoryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryResponse createCategory(
-            @RequestBody CategoryCreateRequest payload
+            @RequestBody @Validated CategoryCreateRequest payload
     ) {
         return categoryService.createCategory(payload);
     }
@@ -49,7 +54,7 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public CategoryResponse getCategoryByIdAndUpdate(
             @PathVariable Long categoryId,
-            @RequestBody CategoryUpdateRequest payload
+            @RequestBody @Validated CategoryUpdateRequest payload
     ) {
         return categoryService.findCategoryByIdAndUpdate(categoryId, payload);
     }

@@ -21,9 +21,15 @@ public class Category {
     private Long categoryId;
     @Column(name = "categoryName", nullable = false, unique = true)
     private String categoryName;
+    @Column(name = "categoryColor")
+    private String categoryColor;
 
     // relazioni
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "projectId", nullable = false)
+    @JsonIgnore
+    private Project project;
     @ManyToMany(mappedBy = "categories")
     @JsonIgnore
     private Set<Task> tasks = new HashSet<>();

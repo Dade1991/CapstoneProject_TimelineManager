@@ -2,13 +2,11 @@ package davidebraghi.CapstoneProject_TimelineManager.services;
 
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectCreateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectUpdateRequest;
-import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
-import davidebraghi.CapstoneProject_TimelineManager.entities.Project_User_Role;
-import davidebraghi.CapstoneProject_TimelineManager.entities.User;
-import davidebraghi.CapstoneProject_TimelineManager.entities.User_Role;
+import davidebraghi.CapstoneProject_TimelineManager.entities.*;
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.CategoryRepository;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.ProjectRepository;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.Project_User_RoleRepository;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.User_RoleRepository;
@@ -34,6 +32,8 @@ public class ProjectService {
     private User_RoleRepository user_roleRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     // FIND_ALL (paginato)
 
@@ -62,6 +62,7 @@ public class ProjectService {
                 payload.projectDescription(),
                 payload.expiryDate()
         );
+
         project.setCreator(foundCreator);
 
         Project savedProject = projectRepository.save(project);
@@ -69,7 +70,18 @@ public class ProjectService {
         // Assegnare il creatore come ADMIN
         assignUserToProject(savedProject.getProjectId(), creatorId, RoleNameENUM.ADMIN);
 
+        // Crea categoria di default per il progetto appena creato
+        createDefaultCategoryForProject(savedProject);
+
         return savedProject;
+    }
+
+    private void createDefaultCategoryForProject(Project project) {
+        Category defaultCategory = new Category();
+        defaultCategory.setProject(project);
+        defaultCategory.setCategoryName("Default");
+        defaultCategory.setCategoryColor("#000000"); // colore di default grigio chiaro
+        categoryRepository.save(defaultCategory);
     }
 
     // FIND_BY_ID

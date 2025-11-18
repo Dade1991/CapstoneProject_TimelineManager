@@ -108,6 +108,8 @@ public class UserController {
         userService.findUserByIdAndDelete(userId);
     }
 
+    // FIND - FIND_BY_ID_ALL_PROJECTS - http://localhost:3001/api/{userId}/projects
+
     @GetMapping("/{userId}/projects")
     public List<ProjectResponse> getProjectsOfUser(@PathVariable Long userId) {
         List<Project> projects = projectService.findProjectsByUserId(userId);

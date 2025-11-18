@@ -4,6 +4,7 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_Req
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_RequestsAndResponses.CategoryResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_RequestsAndResponses.CategoryUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Category;
+import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
@@ -22,6 +23,9 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ProjectService projectService;
+
     // FIND_BY_ID_AND_UPDATE
 
     public CategoryResponse findCategoryByIdAndUpdate(Long categoryId, CategoryUpdateRequest payload) {
@@ -31,8 +35,20 @@ public class CategoryService {
         if (payload.categoryName() != null && !payload.categoryName().isBlank()) {
             foundCategory.setCategoryName(payload.categoryName());
         }
+        if (payload.categoryColor() != null && !payload.categoryColor().isBlank()) {
+            foundCategory.setCategoryColor(payload.categoryColor());
+        }
         Category savedCategory = categoryRepository.save(foundCategory);
         return CategoryResponse.fromEntity(savedCategory);
+    }
+
+    // FIND_CATEGORIES_BY_PROJECT_ID
+
+    public List<CategoryResponse> findCategoriesByProjectId(Long projectId) {
+        return categoryRepository.findByProject_ProjectId(projectId)
+                .stream()
+                .map(CategoryResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
     // FIND_ALL
@@ -50,8 +66,15 @@ public class CategoryService {
         if (categoryRepository.existsByCategoryNameIgnoreCase(payload.categoryName())) {
             throw new BadRequestException("Category " + payload.categoryName() + " already exists.");
         }
+
+        // Verifica che il progetto esista e lo recupera
+        Project project = projectService.findProjectById(payload.projectId());
+
         Category category = new Category();
         category.setCategoryName(payload.categoryName());
+        category.setCategoryColor(payload.categoryColor() != null ? payload.categoryColor() : "#000000");
+        category.setProject(project); // Associa il progetto alla categoria
+
         Category saved = categoryRepository.save(category);
         return CategoryResponse.fromEntity(saved);
     }

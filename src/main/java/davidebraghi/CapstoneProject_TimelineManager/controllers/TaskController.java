@@ -40,28 +40,31 @@ public class TaskController {
     // GET - FIND_BY_ID - http://localhost:3001/api/tasks/{taskId}
 
     @GetMapping("/{taskId}")
-    public Task getTaskById(
+    public TaskResponse getTaskById(
             @PathVariable Long taskId
     ) {
-        return taskService.findTaskById(taskId);
+        return TaskResponse.fromEntity(taskService.findTaskById(taskId));
     }
 
     // POST - SAVE - http://localhost:3001/api/tasks
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Task createTask(
+    public TaskResponse createTask(
             @RequestBody @Validated TaskCreateRequest payload,
             BindingResult validationResult,
             @AuthenticationPrincipal User creator
     ) {
         if (validationResult.hasErrors()) {
-            throw new ValidationException(validationResult.getFieldErrors().
-                    stream().
-                    map(fieldError -> fieldError.getDefaultMessage()).
-                    toList());
+            throw new ValidationException(
+                    validationResult.getFieldErrors()
+                            .stream()
+                            .map(fieldError -> fieldError.getDefaultMessage())
+                            .toList()
+            );
         }
-        return taskService.createTask(payload, creator.getUserId());
+        Task createdTask = taskService.createTask(payload, creator.getUserId());
+        return TaskResponse.fromEntity(createdTask);
     }
 
     // PUT - FIND_BY_ID_AND_UPDATE - http://localhost:3001/api/tasks/{taskId}
@@ -75,12 +78,12 @@ public class TaskController {
             @AuthenticationPrincipal User currentUser
     ) {
         if (validationResult.hasErrors()) {
-            throw new ValidationException(validationResult.getFieldErrors().
-                    stream().
-                    map(fieldError -> fieldError.getDefaultMessage()).
-                    toList());
+            throw new ValidationException(validationResult.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .toList());
         }
-        Task updatedTask = taskService.findTaskByIdAndUpdate(taskId, payload);
+        var updatedTask = taskService.findTaskByIdAndUpdate(taskId, payload);
         updatedTask.setLastModifiedBy(currentUser);
         updatedTask = taskService.saveTaskChanges(updatedTask);
         return TaskResponse.fromEntity(updatedTask);
@@ -101,40 +104,45 @@ public class TaskController {
     // GET - ricerca i tasks per progetto - http://localhost:3001/api/tasks/project/{projectId}
 
     @GetMapping("/project/{projectId}")
-    public List<Task> getAllTasksByProject(
+    public List<TaskResponse> getAllTasksByProject(
             @PathVariable Long projectId
     ) {
-        return taskService.findTaskByProject(projectId);
+        return taskService.findTaskByProject(projectId).stream()
+                .map(TaskResponse::fromEntity)
+                .toList();
     }
 
     // GET - ricerca i tasks per progetto - http://localhost:3001/api/tasks/status/{statusId}
 
     @GetMapping("/status/{statusId}")
-    public List<Task> getAllTasksByStatus(
+    public List<TaskResponse> getAllTasksByStatus(
             @PathVariable Long statusId
     ) {
-        return taskService.findTaskByStatus(statusId);
+        return taskService.findTaskByStatus(statusId).stream()
+                .map(TaskResponse::fromEntity)
+                .toList();
     }
-
     // GET - ricerca i tasks per progetto - http://localhost:3001/api/tasks/assignee/{userId}
 
     @GetMapping("/assignee/{userId}")
-    public List<Task> getAllTasksByAssignee(
+    public List<TaskResponse> getAllTasksByAssignee(
             @PathVariable Long userId
     ) {
-        return taskService.findTaskByAssignee(userId);
+        return taskService.findTaskByAssignee(userId).stream()
+                .map(TaskResponse::fromEntity)
+                .toList();
     }
-
 
     // POST - ASSIGN USER TO TASK - http://localhost:3001/api/tasks/{taskId}/assignees/{userId}
 
     @PostMapping("/{taskId}/assignees/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Task assignUserToTask(
+    public TaskResponse assignUserToTask(
             @PathVariable Long taskId,
             @PathVariable Long userId
     ) {
-        return taskService.assignUserToTask(taskId, userId);
+        var assignedTask = taskService.assignUserToTask(taskId, userId);
+        return TaskResponse.fromEntity(assignedTask);
     }
 
     // DELETE - REMOVE USER FROM TASK - http://localhost:3001/api/tasks/{taskId}/assignees/{userId}
@@ -154,20 +162,22 @@ public class TaskController {
 
     @PutMapping("/{taskId}/complete")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public Task completeTask(
+    public TaskResponse completeTask(
             @PathVariable Long taskId
     ) {
-        return taskService.completeTask(taskId);
+        var task = taskService.completeTask(taskId);
+        return TaskResponse.fromEntity(task);
     }
 
     // PUT - REOPEN COMPLETED TASK - http://localhost:3001/api/tasks/{taskId}/reopen
 
     @PutMapping("/{taskId}/reopen")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public Task reopenCompleteTask(
+    public TaskResponse reopenTask(
             @PathVariable Long taskId
     ) {
-        return taskService.reopenCompletedTask(taskId);
+        var task = taskService.reopenCompletedTask(taskId);
+        return TaskResponse.fromEntity(task);
     }
 
     // ---------------- FILTRI CUSTOM PER TASK ----------------
