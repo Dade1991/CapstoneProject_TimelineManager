@@ -102,7 +102,7 @@ public class TaskService {
 
     public List<Task> findTaskByProject(Long projectId) {
         return this.taskRepository.
-                findByProject_ProjectId(projectId);
+                findByProjectIdWithCategories(projectId);
     }
 
     // FIND_BY_STATUS

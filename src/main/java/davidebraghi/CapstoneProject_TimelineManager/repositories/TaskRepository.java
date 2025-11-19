@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -52,6 +54,11 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     // conta quanti tasks non sono stati completati globalmente
 
     long countByCompletedAtIsNull();
+
+    // cerca i task di uno specifico progetto CON categorie caricate (JOIN FETCH)
+    
+    @Query("SELECT DISTINCT t FROM Task t LEFT JOIN FETCH t.categories WHERE t.project.projectId = :projectId")
+    List<Task> findByProjectIdWithCategories(@Param("projectId") Long projectId);
 
     // Metodo per filtrare task che appartengono a una delle categorie date
     Page<Task> findDistinctByCategories_CategoryIdIn(List<Long> categoryIds, Pageable pageable);

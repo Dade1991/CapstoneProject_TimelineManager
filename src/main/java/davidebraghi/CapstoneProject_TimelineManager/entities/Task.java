@@ -1,6 +1,7 @@
 package davidebraghi.CapstoneProject_TimelineManager.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 import jakarta.persistence.*;
 import lombok.*;
@@ -74,7 +75,7 @@ public class Task {
             joinColumns = @JoinColumn(name = "taskId"),
             inverseJoinColumns = @JoinColumn(name = "categoryId")
     )
-    @JsonIgnore
+    @JsonManagedReference
     private Set<Category> categories = new HashSet<>();
 
     public Task(String taskTitle,

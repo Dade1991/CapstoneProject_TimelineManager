@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +32,7 @@ public class Category {
     @JsonIgnore
     private Project project;
     @ManyToMany(mappedBy = "categories")
-    @JsonIgnore
+    @JsonBackReference
     private Set<Task> tasks = new HashSet<>();
 
 }

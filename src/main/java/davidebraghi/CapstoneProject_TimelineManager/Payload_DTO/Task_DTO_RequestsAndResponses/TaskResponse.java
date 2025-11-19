@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses;
 
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_RequestsAndResponses.CategoryResponse;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 
@@ -26,18 +27,18 @@ public record TaskResponse(
         int commentCount,
         boolean isCompleted,
         boolean isOverdue,
-        Set<String> categories
+        Set<CategoryResponse> categories
 ) {
 
     // converte la "taskEntity" in "taskResponse"
 
     public static TaskResponse fromEntity(Task task) {
 
-        Set<String> categoryNames = task.getCategories() != null ?
-                task.getCategories().
-                        stream().
-                        map(category -> category.getCategoryName()).
-                        collect(Collectors.toSet()) :
+        Set<CategoryResponse> categoryResponses = task.getCategories() != null ?
+                task.getCategories()
+                        .stream()
+                        .map(CategoryResponse::fromEntity)
+                        .collect(Collectors.toSet()) :
                 Set.of();
 
         return new TaskResponse(
@@ -59,7 +60,7 @@ public record TaskResponse(
                 task.getCommentCount(),
                 task.isCompleted(),
                 task.isOverdue(),
-                categoryNames
+                categoryResponses
         );
     }
 }
