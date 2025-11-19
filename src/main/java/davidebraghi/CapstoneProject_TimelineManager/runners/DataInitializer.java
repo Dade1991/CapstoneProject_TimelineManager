@@ -48,17 +48,19 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initializeTaskStatuses() {
         if (task_statusRepository.count() == 0) {
-            task_statusRepository.save(new Task_Status(TaskStatusENUM.TODO, 1));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.TO_DO, 1));
             task_statusRepository.save(new Task_Status(TaskStatusENUM.IN_PROGRESS, 2));
             task_statusRepository.save(new Task_Status(TaskStatusENUM.IN_REVIEW, 3));
-            task_statusRepository.save(new Task_Status(TaskStatusENUM.UNDER_QA_QC_REVIEW, 4));
-            task_statusRepository.save(new Task_Status(TaskStatusENUM.PAUSED_OR_BLOCKED, 5));
-            task_statusRepository.save(new Task_Status(TaskStatusENUM.COMPLETED, 6));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.UNDER_TESTING, 4));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.PAUSED, 5));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.WAITING_FEEDBACK, 6));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.BLOCKED, 7));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.COMPLETED, 8));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.CANCELLED, 9));
         } else {
             task_statusRepository.count();
         }
     }
-
 
     private void initializeUserRoles() {
         if (user_roleRepository.count() == 0) {

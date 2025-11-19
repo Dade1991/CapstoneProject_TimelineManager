@@ -49,7 +49,7 @@ public class Task {
     @JsonIgnore
     private Project project;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "taskStatusId", nullable = false)
+    @JoinColumn(name = "taskStatusId")
     @JsonIgnore
     private Task_Status status;
     @ManyToOne(fetch = FetchType.EAGER)

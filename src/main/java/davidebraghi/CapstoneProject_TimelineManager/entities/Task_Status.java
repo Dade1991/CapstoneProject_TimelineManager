@@ -17,7 +17,7 @@ public class Task_Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    @Column(name = "task_status_id", updatable = false)
+    @Column(name = "task_status_id")
     private Long taskStatusId;
     @Column(name = "task_status_name", unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -43,6 +43,6 @@ public class Task_Status {
 
     public boolean isFinalStatus() {
         return statusName == TaskStatusENUM.COMPLETED ||
-                statusName == TaskStatusENUM.PAUSED_OR_BLOCKED;
+                statusName == TaskStatusENUM.CANCELLED;
     }
 }

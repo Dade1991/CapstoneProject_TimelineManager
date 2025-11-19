@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -55,6 +56,9 @@ public class TaskController {
             BindingResult validationResult,
             @AuthenticationPrincipal User creator
     ) {
+        System.out.println("==================== Ricevuto taskExpiryDate: " + payload.taskExpiryDate());
+        System.out.println("Payload ricevuto completo: " + payload);
+        System.out.println("Expiry date raw: " + payload.taskExpiryDate());
         if (validationResult.hasErrors()) {
             throw new ValidationException(
                     validationResult.getFieldErrors()
@@ -77,6 +81,7 @@ public class TaskController {
             BindingResult validationResult,
             @AuthenticationPrincipal User currentUser
     ) {
+
         if (validationResult.hasErrors()) {
             throw new ValidationException(validationResult.getFieldErrors()
                     .stream()
@@ -155,6 +160,22 @@ public class TaskController {
     ) {
         taskService.removeUserFromTask(taskId, userId);
     }
+
+    // ---------------- CAMBIO STATUS TASK DEDICATO ----------------
+
+    // PUT - COMPLETE TASK - http://localhost:3001/api/tasks/{taskId}/status
+
+    @PutMapping("/{taskId}/status")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public TaskResponse findTaskByIdAndUpdateTaskStatus(
+            @PathVariable Long taskId,
+            @RequestBody Map<String, Long> statusPayload
+    ) {
+        Long newStatusId = statusPayload.get("statusId");
+        Task updatedTask = taskService.findTaskByIdAndUpdateTaskStatus(taskId, newStatusId);
+        return TaskResponse.fromEntity(updatedTask);
+    }
+
 
     // ---------------- COMPLETA/RIAPRI TASK ----------------
 

@@ -64,8 +64,8 @@ public class TaskService {
         Project foundProject = projectRepository.findById(payload.projectId())
                 .orElseThrow(() -> new NotFoundException("Project not found."));
 
-        Task_Status foundStatus = task_statusRepository.findById(payload.statusId())
-                .orElseThrow(() -> new NotFoundException("Status not found."));
+//        Task_Status foundStatus = task_statusRepository.findById(payload.statusId())
+//                .orElseThrow(() -> new NotFoundException("Status not found."));
 
         Task task = new Task(
                 payload.taskTitle(),
@@ -75,7 +75,8 @@ public class TaskService {
         );
         task.setCreator(foundCreator);
         task.setProject(foundProject);
-        task.setStatus(foundStatus);
+//        task.setStatus(foundStatus);
+        System.out.println("Aggiorno expiryDate a: " + payload.taskExpiryDate());
 
         if (payload.categoryIds() != null && !payload.categoryIds().isEmpty()) {
             Set<Category> categories = payload.categoryIds().
@@ -196,7 +197,6 @@ public class TaskService {
     // FIND_BY_ID_AND_UPDATE
 
     public Task findTaskByIdAndUpdate(Long taskId, TaskUpdateRequest payload) {
-
         Task foundTask = findTaskById(taskId);
 
         if (payload.taskTitle() != null && !payload.taskTitle().isBlank()) {
@@ -208,23 +208,27 @@ public class TaskService {
         if (payload.taskPriority() != null) {
             foundTask.setTaskPriority(payload.taskPriority());
         }
-        if (payload.statusId() != null) {
-            Task_Status foundStatus = task_statusRepository.findById(payload.statusId()).
-                    orElseThrow(() -> new NotFoundException("Status with ID " + payload.statusId() + " has not been found."));
-            foundTask.setStatus(foundStatus);
-        }
+//        if (payload.statusId() != null) {
+//            Task_Status foundStatus = task_statusRepository.findById(payload.statusId())
+//                    .orElseThrow(() -> new NotFoundException("Status with ID " + payload.statusId() + " has not been found."));
+//            foundTask.setStatus(foundStatus);
+//        }
         if (payload.taskExpiryDate() != null) {
             foundTask.setTaskExpiryDate(payload.taskExpiryDate());
         }
         if (payload.categoryIds() != null) {
-            Set<Category> categories = payload.categoryIds().
-                    stream().
-                    map(id -> categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category with ID " + id + " not found."))).
-                    collect(Collectors.toSet());
-            foundTask.setCategories(categories);
+            Set<Category> categories = payload.categoryIds()
+                    .stream()
+                    .map(id -> categoryRepository.findById(id)
+                            .orElseThrow(() -> new NotFoundException("Category with ID " + id + " not found.")))
+                    .collect(Collectors.toSet());
+
+            // Rimuovi prima tutte le categorie esistenti per evitare duplicati
+            foundTask.getCategories().clear();
+            foundTask.getCategories().addAll(categories);
         }
 
-        return this.taskRepository.save(foundTask);
+        return saveTaskChanges(foundTask);
     }
 
     public Task saveTaskChanges(Task task) {
@@ -238,6 +242,16 @@ public class TaskService {
         Task foundTask = findTaskById(taskId);
 
         this.taskRepository.delete(foundTask);
+    }
+
+    // FIND TASK BY ID AND CREATE/UPDATE STATUS
+
+    public Task findTaskByIdAndUpdateTaskStatus(Long taskId, Long taskStatusId) {
+        Task task = findTaskById(taskId);
+        Task_Status status = task_statusRepository.findByTaskStatusId(taskStatusId)
+                .orElseThrow(() -> new NotFoundException("Status not found: " + taskStatusId));
+        task.setStatus(status);
+        return taskRepository.save(task);
     }
 
     // ASSIGN USER TO TASK

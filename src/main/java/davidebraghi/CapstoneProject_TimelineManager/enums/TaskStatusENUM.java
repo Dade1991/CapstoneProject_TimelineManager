@@ -1,10 +1,13 @@
 package davidebraghi.CapstoneProject_TimelineManager.enums;
 
 public enum TaskStatusENUM {
-    TODO,
+    TO_DO,
     IN_PROGRESS,
     IN_REVIEW,
-    UNDER_QA_QC_REVIEW,
-    PAUSED_OR_BLOCKED,
-    COMPLETED
+    UNDER_TESTING,
+    PAUSED,
+    WAITING_FEEDBACK,
+    BLOCKED,
+    COMPLETED,
+    CANCELLED,
 }

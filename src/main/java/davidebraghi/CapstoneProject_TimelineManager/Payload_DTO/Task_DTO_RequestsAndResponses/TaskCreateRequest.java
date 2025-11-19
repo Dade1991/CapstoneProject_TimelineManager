@@ -23,8 +23,7 @@ public record TaskCreateRequest(
         @NotNull(message = "Project name is mandatory.")
         Long projectId,
 
-        @NotNull(message = "Status is mandatory.")
-        Long statusId,
+        Long taskStatusId,
 
         @Future(message = "Expiry date shall be in future.")
         LocalDate taskExpiryDate,
