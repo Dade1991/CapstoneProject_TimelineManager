@@ -64,12 +64,11 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initializeUserRoles() {
         if (user_roleRepository.count() == 0) {
-            user_roleRepository.save(new User_Role(RoleNameENUM.ADMIN));
-            user_roleRepository.save(new User_Role(RoleNameENUM.MANAGER));
-            user_roleRepository.save(new User_Role(RoleNameENUM.USER));
-            user_roleRepository.save(new User_Role(RoleNameENUM.GUEST));
-        } else {
-            user_roleRepository.count();
+            for (RoleNameENUM roleName : RoleNameENUM.values()) {
+                if (user_roleRepository.findByRoleName(roleName).isEmpty()) {
+                    user_roleRepository.save(new User_Role(roleName));
+                }
+            }
         }
     }
 
@@ -79,7 +78,7 @@ public class DataInitializer implements CommandLineRunner {
 
         createUserIfNotExists(
                 "davideB@demo.com",
-                "admin",
+                "Dade_1991",
                 "Davide",
                 "Braghi",
                 "admin1234"
@@ -89,7 +88,7 @@ public class DataInitializer implements CommandLineRunner {
 
         createUserIfNotExists(
                 "claraS@demo.com",
-                "user1",
+                "Mini",
                 "Clara",
                 "Schillaci",
                 "user1234"
@@ -99,7 +98,7 @@ public class DataInitializer implements CommandLineRunner {
 
         createUserIfNotExists(
                 "riccardoM@demo.com",
-                "user2",
+                "Raik-666",
                 "Riccardo",
                 "Marra",
                 "user1234"
@@ -109,7 +108,7 @@ public class DataInitializer implements CommandLineRunner {
 
         createUserIfNotExists(
                 "tizianaB@demo.com",
-                "user3",
+                "Tiz",
                 "Tiziana",
                 "Biciocchi",
                 "user1234"
@@ -119,7 +118,7 @@ public class DataInitializer implements CommandLineRunner {
 
         createUserIfNotExists(
                 "eliaG@demo.com",
-                "user4",
+                "Eli_20_DND",
                 "Elia",
                 "Guerci",
                 "user1234"

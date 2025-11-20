@@ -1,12 +1,15 @@
 package davidebraghi.CapstoneProject_TimelineManager.controllers;
 
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Member_DTO_RequestsAndResponses.MemberRequest;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Member_DTO_RequestsAndResponses.MemberResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectCreateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectUpdateRequest;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.RoleChange_DTO_RequestsAndResponses.RoleChangeRequest;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.RoleChange_DTO_RequestsAndResponses.RoleChangeResponse;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
-import davidebraghi.CapstoneProject_TimelineManager.entities.Project_User_Role;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
-import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
+import davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,47 +115,64 @@ public class ProjectController {
 
     // ---------------- GESTIONE MEMBRI DEL PROGETTO ----------------
 
-    // POST - aggiungere uno user al project - http://localhost:3001/api/projects/{projectId}/members/{userId}
+    // POST - aggiungere uno user al project [SOLO CREATOR]- http://localhost:3001/api/projects/{projectId}/members
 
-    @PostMapping("/{projectId}/members/{userId}")
+    @PostMapping("/{projectId}/members")
     @ResponseStatus(HttpStatus.CREATED)
     public void addMemberToProject(
             @PathVariable Long projectId,
-            @PathVariable Long userId,
-            @RequestParam RoleNameENUM roleName
+            @RequestBody MemberRequest memberRequest,
+            @AuthenticationPrincipal User currentUser
     ) {
-        projectService.addMemberToProject(projectId, userId, roleName);
+
+        if (!projectService.hasPermission(projectId, currentUser.getUserId(), ProjectPermissionENUM.MODIFY)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Project Creator & Manager can add members.");
+        }
+        projectService.addMemberToProject(projectId, memberRequest.userId(), memberRequest.role());
     }
 
-    // DELETE - rimuovere un membro da un progetto - http://localhost:3001/api/projects/{projectId}/members/{userId}
+    // DELETE - rimuovere un membro da un progetto [SOLO CREATOR] - http://localhost:3001/api/projects/{projectId}/members/{userId}
 
     @DeleteMapping("/{projectId}/members/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeMemberFromProject(
             @PathVariable Long projectId,
-            @PathVariable Long userId
+            @PathVariable Long userId,
+            @AuthenticationPrincipal User currentUser
     ) {
+        if (!projectService.hasPermission(projectId, currentUser.getUserId(), ProjectPermissionENUM.MODIFY)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Project Creator & Manager can remove members.");
+        }
         projectService.removeMemberFromProject(projectId, userId);
     }
 
-    // PUT - cambiare il ruolo ad uno specifico user - http://localhost:3001/api/projects/{projectId}/members/{userId}/role
+    // PUT - cambiare il ruolo ad uno specifico user [SOLO CREATOR] - http://localhost:3001/api/projects/{projectId}/members/{userId}/role
 
     @PutMapping("/{projectId}/members/{userId}/role")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void changeUserRole(
+    public RoleChangeResponse changeUserRole(
             @PathVariable Long projectId,
             @PathVariable Long userId,
-            @RequestParam RoleNameENUM newRole
+            @RequestBody RoleChangeRequest newRoleRequest,
+            @AuthenticationPrincipal User currentUser
     ) {
-        projectService.changeUserRole(projectId, userId, newRole);
+        return projectService.changeUserRole(projectId, currentUser.getUserId(), userId, newRoleRequest.newRole());
     }
 
-    // GET - cerca tutti gli users di uno specifico progetto - http://localhost:3001/api/projects/{projectId}/members
+    // GET - cerca tutti gli users di uno specifico progetto [ACCESSIBILE A MEMBRI E CREATOR] - http://localhost:3001/api/projects/{projectId}/members
 
     @GetMapping("/{projectId}/members")
-    public List<Project_User_Role> getProjectMembers(
-            @PathVariable Long projectId
+    public List<MemberResponse> getProjectMembers(
+            @PathVariable Long projectId,
+            @AuthenticationPrincipal User currentUser
     ) {
-        return projectService.getProjectMembers(projectId);
+        if (!projectService.isUserMember(projectId, currentUser.getUserId()) &&
+                !projectService.isUserCreator(projectId, currentUser.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied.");
+        }
+        return projectService.getProjectMembers(projectId)
+                .stream()
+                .map(MemberResponse::fromEntity)
+                .toList();
     }
 }

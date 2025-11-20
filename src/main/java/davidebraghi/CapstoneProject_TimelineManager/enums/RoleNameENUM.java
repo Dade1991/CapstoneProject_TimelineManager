@@ -1,8 +1,7 @@
 package davidebraghi.CapstoneProject_TimelineManager.enums;
 
 public enum RoleNameENUM {
+    CREATOR,
     ADMIN,
-    MANAGER,
-    USER,
     GUEST
 }

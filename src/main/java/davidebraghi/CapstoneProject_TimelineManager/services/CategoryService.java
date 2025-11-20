@@ -63,17 +63,17 @@ public class CategoryService {
     // SAVE
 
     public CategoryResponse createCategory(CategoryCreateRequest payload) {
-        if (categoryRepository.existsByCategoryNameIgnoreCase(payload.categoryName())) {
+        Project project = projectService.findProjectById(payload.projectId());
+        boolean isDefaultCategoryExists = categoryRepository.existsByProjectAndCategoryNameIgnoreCase(project, payload.categoryName());
+
+        if (isDefaultCategoryExists) {
             throw new BadRequestException("Category " + payload.categoryName() + " already exists.");
         }
-
-        // Verifica che il progetto esista e lo recupera
-        Project project = projectService.findProjectById(payload.projectId());
-
+        
         Category category = new Category();
         category.setCategoryName(payload.categoryName());
         category.setCategoryColor(payload.categoryColor() != null ? payload.categoryColor() : "#000000");
-        category.setProject(project); // Associa il progetto alla categoria
+        category.setProject(project);
 
         Category saved = categoryRepository.save(category);
         return CategoryResponse.fromEntity(saved);

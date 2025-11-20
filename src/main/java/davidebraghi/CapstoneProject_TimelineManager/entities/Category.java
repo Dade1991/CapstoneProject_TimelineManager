@@ -20,7 +20,7 @@ public class Category {
     @Setter(AccessLevel.NONE)
     @Column(name = "categoryId")
     private Long categoryId;
-    @Column(name = "categoryName", nullable = false, unique = true)
+    @Column(name = "categoryName")
     private String categoryName;
     @Column(name = "categoryColor")
     private String categoryColor;

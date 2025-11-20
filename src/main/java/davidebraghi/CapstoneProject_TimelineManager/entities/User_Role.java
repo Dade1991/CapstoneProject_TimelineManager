@@ -41,17 +41,17 @@ public class User_Role {
         return roleName.name();
     }
 
-    public boolean isAdmin() {
-        return roleName == RoleNameENUM.ADMIN;
+    public boolean isCreator() {
+        return roleName == RoleNameENUM.CREATOR;
     }
 
     public boolean isManager() {
-        return roleName == RoleNameENUM.MANAGER;
+        return roleName == RoleNameENUM.ADMIN;
     }
 
     public boolean canManageProjects() {
-        return roleName == RoleNameENUM.ADMIN ||
-                roleName == RoleNameENUM.MANAGER;
+        return roleName == RoleNameENUM.CREATOR ||
+                roleName == RoleNameENUM.ADMIN;
     }
 
     public int getAssignmentCount() {

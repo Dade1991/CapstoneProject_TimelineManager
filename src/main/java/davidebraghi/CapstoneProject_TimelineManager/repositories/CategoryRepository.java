@@ -1,6 +1,7 @@
 package davidebraghi.CapstoneProject_TimelineManager.repositories;
 
 import davidebraghi.CapstoneProject_TimelineManager.entities.Category;
+import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +17,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     // verifica l'esistenza di una determinata Category
 
-    boolean existsByCategoryNameIgnoreCase(String categoryName);
+    boolean existsByProjectAndCategoryNameIgnoreCase(Project project, String categoryName);
 
     // cerca un determinato progetto per il suo Id
 
