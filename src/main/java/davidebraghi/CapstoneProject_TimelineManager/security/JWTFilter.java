@@ -61,7 +61,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             // estrazione userId dal token
 
-            Long userId = jwtTools.exctractIdFromToken(accessToken);
+            Long userId = jwtTools.extractIdFromToken(accessToken);
 
             System.out.println("[JWTFilter] User ID extracted: " + userId);
 

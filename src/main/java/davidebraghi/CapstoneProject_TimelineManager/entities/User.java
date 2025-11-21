@@ -100,10 +100,16 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (projectRoles == null) {
 
-        // Ritorna la lista di autorità (ruoli)
+            // Ritorna la lista di autorità (ruoli)
 
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            return List.of(new SimpleGrantedAuthority("ROLE_USER")); // ruolo base
+        }
+        return projectRoles.stream()
+                .map(projectUserRole -> new SimpleGrantedAuthority("ROLE_" + projectUserRole.getRole().getRoleName().name()))
+                .distinct()
+                .toList();
     }
 
     // implementazioni di userDetails

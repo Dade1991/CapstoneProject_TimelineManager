@@ -9,15 +9,14 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.RoleChange_DTO_R
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.RoleChange_DTO_RequestsAndResponses.RoleChangeResponse;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
-import davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -93,6 +92,7 @@ public class ProjectController {
 
     @PutMapping("/{projectId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public ProjectResponse getProjectByIdAndUpdate(
             @PathVariable Long projectId,
             @RequestBody ProjectUpdateRequest payload,
@@ -112,6 +112,7 @@ public class ProjectController {
 
     @DeleteMapping("/{projectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId)")
     public void deleteProject(
             @PathVariable Long projectId
     ) {
@@ -124,15 +125,12 @@ public class ProjectController {
 
     @PostMapping("/{projectId}/members")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("@projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public void addMemberToProject(
             @PathVariable Long projectId,
             @RequestBody MemberRequest memberRequest,
             @AuthenticationPrincipal User currentUser
     ) {
-
-        if (!projectService.hasPermission(projectId, currentUser.getUserId(), ProjectPermissionENUM.MODIFY)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Project Creator & Manager can add members.");
-        }
         projectService.addMemberToProject(projectId, memberRequest.userId(), memberRequest.role());
     }
 
@@ -140,14 +138,12 @@ public class ProjectController {
 
     @DeleteMapping("/{projectId}/members/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public void removeMemberFromProject(
             @PathVariable Long projectId,
             @PathVariable Long userId,
             @AuthenticationPrincipal User currentUser
     ) {
-        if (!projectService.hasPermission(projectId, currentUser.getUserId(), ProjectPermissionENUM.MODIFY)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only Project Creator & Manager can remove members.");
-        }
         projectService.removeMemberFromProject(projectId, userId);
     }
 
@@ -155,6 +151,7 @@ public class ProjectController {
 
     @PutMapping("/{projectId}/members/{userId}/role")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PreAuthorize("@projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public RoleChangeResponse changeUserRole(
             @PathVariable Long projectId,
             @PathVariable Long userId,
@@ -167,14 +164,11 @@ public class ProjectController {
     // GET - cerca tutti gli users di uno specifico progetto [ACCESSIBILE A MEMBRI E CREATOR] - http://localhost:3001/api/projects/{projectId}/members
 
     @GetMapping("/{projectId}/members")
+    @PreAuthorize("@projectService.isUserMember(#projectId, principal.userId) or @projectService.isUserCreator(#projectId, principal.userId)")
     public List<MemberResponse> getProjectMembers(
             @PathVariable Long projectId,
             @AuthenticationPrincipal User currentUser
     ) {
-        if (!projectService.isUserMember(projectId, currentUser.getUserId()) &&
-                !projectService.isUserCreator(projectId, currentUser.getUserId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied.");
-        }
         return projectService.getProjectMembers(projectId)
                 .stream()
                 .map(MemberResponse::fromEntity)
