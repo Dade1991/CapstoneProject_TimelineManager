@@ -11,6 +11,10 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
+    // Recupera una singola categoria per ID
+
+    Optional<Category> findById(Long categoryId);
+
     // cerca una determinata Category per nome
 
     Optional<Category> findByCategoryNameIgnoreCase(String categoryName);
@@ -19,7 +23,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     boolean existsByProjectAndCategoryNameIgnoreCase(Project project, String categoryName);
 
-    // cerca un determinato progetto per il suo Id
+    // restituisce tutte le categorie di un progetto
 
     List<Category> findByProject_ProjectId(Long projectId);
 }

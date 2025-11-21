@@ -28,9 +28,9 @@ public class CategoryService {
 
     // FIND_BY_ID_AND_UPDATE
 
-    public CategoryResponse findCategoryByIdAndUpdate(Long categoryId, CategoryUpdateRequest payload) {
+    public CategoryResponse findCategoryByIdAndUpdate(Long projectId, Long categoryId, CategoryUpdateRequest payload) {
 
-        Category foundCategory = findCategoryById(categoryId);
+        Category foundCategory = findCategoryByIdAndProject(categoryId, projectId);
 
         if (payload.categoryName() != null && !payload.categoryName().isBlank()) {
             foundCategory.setCategoryName(payload.categoryName());
@@ -64,12 +64,13 @@ public class CategoryService {
 
     public CategoryResponse createCategory(CategoryCreateRequest payload) {
         Project project = projectService.findProjectById(payload.projectId());
+        
         boolean isDefaultCategoryExists = categoryRepository.existsByProjectAndCategoryNameIgnoreCase(project, payload.categoryName());
 
         if (isDefaultCategoryExists) {
             throw new BadRequestException("Category " + payload.categoryName() + " already exists.");
         }
-        
+
         Category category = new Category();
         category.setCategoryName(payload.categoryName());
         category.setCategoryColor(payload.categoryColor() != null ? payload.categoryColor() : "#000000");
@@ -81,30 +82,37 @@ public class CategoryService {
 
     // FIND_BY_ID
 
-    public Category findCategoryById(Long categoryId) {
-        return categoryRepository.
-                findById(categoryId).
-                orElseThrow(() -> new NotFoundException("Category with ID " + categoryId + " has not been found."));
+    public Category findCategoryByIdAndProject(Long categoryId, Long projectId) {
+        Category category = findCategoryById(categoryId);
+        if (!category.getProject().getProjectId().equals(projectId)) {
+            throw new BadRequestException("Category with ID " + categoryId + " does not belong to Project " + projectId);
+        }
+        return category;
     }
 
     // FIND_BY_ID (CategoryResponse)
 
-    public CategoryResponse findCategoryResponseById(Long categoryId) {
-        Category category = findCategoryById(categoryId);
+    public CategoryResponse findCategoryResponseById(Long projectId, Long categoryId) {
+        Category category = findCategoryByIdAndProject(categoryId, projectId);
         return CategoryResponse.fromEntity(category);
     }
 
     // FIND_BY_ID_AND_DELETE
 
-    public void findCategoryByIdAndDelete(Long categoryId) {
-
-        Category foundCategory = findCategoryById(categoryId);
+    public void findCategoryByIdAndDelete(Long projectId, Long categoryId) {
+        Category foundCategory = findCategoryByIdAndProject(categoryId, projectId);
         for (Task task : foundCategory.getTasks()) {
             task.getCategories().remove(foundCategory);
         }
-
         foundCategory.getTasks().clear();
 
         this.categoryRepository.delete(foundCategory);
+    }
+
+//    -------- HELPER --------
+
+    private Category findCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException("Category with ID " + categoryId + " has not been found."));
     }
 }

@@ -21,44 +21,41 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/projects/{projectId}/tasks")
 public class TaskController {
 
     @Autowired
     private TaskService taskService;
 
-    // GET - FIND_ALL (paginato) - http://localhost:3001/api/tasks
+    // GET - FIND_ALL (paginato) - http://localhost:3001/api/projects/{projectId}/tasks
 
     @GetMapping
-    public Page<Task> getAllTasks(
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "taskId") String sortBy
+    public List<Task> getAllTasks(
+            @PathVariable Long projectId
     ) {
-        return taskService.findAllTask(pageNumber, pageSize, sortBy);
+        return taskService.findAllTaskByProjectId(projectId);
     }
 
-    // GET - FIND_BY_ID - http://localhost:3001/api/tasks/{taskId}
+    // GET - FIND_BY_ID - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}
 
     @GetMapping("/{taskId}")
     public TaskResponse getTaskById(
+            @PathVariable Long projectId,
             @PathVariable Long taskId
     ) {
-        return TaskResponse.fromEntity(taskService.findTaskById(taskId));
+        return TaskResponse.fromEntity(taskService.findTaskByIdAndProject(taskId, projectId));
     }
 
-    // POST - SAVE - http://localhost:3001/api/tasks
+    // POST - SAVE - http://localhost:3001/api/projects/{projectId}/tasks
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TaskResponse createTask(
+            @PathVariable Long projectId,
             @RequestBody @Validated TaskCreateRequest payload,
             BindingResult validationResult,
             @AuthenticationPrincipal User creator
     ) {
-        System.out.println("==================== Ricevuto taskExpiryDate: " + payload.taskExpiryDate());
-        System.out.println("Payload ricevuto completo: " + payload);
-        System.out.println("Expiry date raw: " + payload.taskExpiryDate());
         if (validationResult.hasErrors()) {
             throw new ValidationException(
                     validationResult.getFieldErrors()
@@ -67,15 +64,16 @@ public class TaskController {
                             .toList()
             );
         }
-        Task createdTask = taskService.createTask(payload, creator.getUserId());
+        Task createdTask = taskService.createTask(projectId, payload, creator.getUserId());
         return TaskResponse.fromEntity(createdTask);
     }
 
-    // PUT - FIND_BY_ID_AND_UPDATE - http://localhost:3001/api/tasks/{taskId}
+    // PUT - FIND_BY_ID_AND_UPDATE - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}
 
     @PutMapping("/{taskId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public TaskResponse getTaskByIdAndUpdate(
+            @PathVariable Long projectId,
             @PathVariable Long taskId,
             @RequestBody @Validated TaskUpdateRequest payload,
             BindingResult validationResult,
@@ -88,27 +86,28 @@ public class TaskController {
                     .map(fieldError -> fieldError.getDefaultMessage())
                     .toList());
         }
-        var updatedTask = taskService.findTaskByIdAndUpdate(taskId, payload);
+        var updatedTask = taskService.findTaskByIdAndUpdate(projectId, taskId, payload);
         updatedTask.setLastModifiedBy(currentUser);
         updatedTask = taskService.saveTaskChanges(updatedTask);
         return TaskResponse.fromEntity(updatedTask);
     }
 
-    // DELETE - FIND_BY_ID_AND_DELETE - http://localhost:3001/api/tasks/{taskId}
+    // DELETE - FIND_BY_ID_AND_DELETE - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}
 
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(
+            @PathVariable Long projectId,
             @PathVariable Long taskId
     ) {
-        taskService.findTaskByIdAndDelete(taskId);
+        taskService.findTaskByIdAndProjectAndDelete(projectId, taskId);
     }
 
     // ---------------- VISUALIZZAZIONE GENERALE TASKS ----------------
 
-    // GET - ricerca i tasks per progetto - http://localhost:3001/api/tasks/project/{projectId}
+    // GET - ricerca i tasks per progetto - http://localhost:3001/api/projects/{projectId}/tasks/project/{taskProjectId}
 
-    @GetMapping("/project/{projectId}")
+    @GetMapping("/project/{taskProjectId}")
     public List<TaskResponse> getAllTasksByProject(
             @PathVariable Long projectId
     ) {
@@ -117,99 +116,107 @@ public class TaskController {
                 .toList();
     }
 
-    // GET - ricerca i tasks per progetto - http://localhost:3001/api/tasks/status/{statusId}
+    // GET - ricerca i tasks per status - http://localhost:3001/api/projects/{projectId}/tasks/status/{statusId}
 
     @GetMapping("/status/{statusId}")
     public List<TaskResponse> getAllTasksByStatus(
+            @PathVariable Long projectId,
             @PathVariable Long statusId
     ) {
-        return taskService.findTaskByStatus(statusId).stream()
+        return taskService.findTaskByProjectAndStatus(projectId, statusId).stream()
                 .map(TaskResponse::fromEntity)
                 .toList();
     }
-    // GET - ricerca i tasks per progetto - http://localhost:3001/api/tasks/assignee/{userId}
+
+    // GET - ricerca i tasks per assignee - http://localhost:3001/api/projects/{projectId}/tasks/assignee/{userId}
 
     @GetMapping("/assignee/{userId}")
     public List<TaskResponse> getAllTasksByAssignee(
+            @PathVariable Long projectId,
             @PathVariable Long userId
     ) {
-        return taskService.findTaskByAssignee(userId).stream()
+        return taskService.findTaskByProjectAndAssignee(projectId, userId).stream()
                 .map(TaskResponse::fromEntity)
                 .toList();
     }
 
-    // POST - ASSIGN USER TO TASK - http://localhost:3001/api/tasks/{taskId}/assignees/{userId}
+    // POST - ASSIGN USER TO TASK - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/assignees/{userId}
 
     @PostMapping("/{taskId}/assignees/{userId}")
     @ResponseStatus(HttpStatus.CREATED)
     public TaskResponse assignUserToTask(
+            @PathVariable Long projectId,
             @PathVariable Long taskId,
             @PathVariable Long userId
     ) {
-        var assignedTask = taskService.assignUserToTask(taskId, userId);
+        var assignedTask = taskService.assignUserToTask(projectId, taskId, userId);
         return TaskResponse.fromEntity(assignedTask);
     }
 
-    // DELETE - REMOVE USER FROM TASK - http://localhost:3001/api/tasks/{taskId}/assignees/{userId}
+    // DELETE - REMOVE USER FROM TASK - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/assignees/{userId}
 
     @DeleteMapping("/{taskId}/assignees/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeUserFromTask(
+            @PathVariable Long projectId,
             @PathVariable Long taskId,
             @PathVariable Long userId
     ) {
-        taskService.removeUserFromTask(taskId, userId);
+        taskService.removeUserFromTask(projectId, taskId, userId);
     }
 
     // ---------------- CAMBIO STATUS TASK DEDICATO ----------------
 
-    // PUT - COMPLETE TASK - http://localhost:3001/api/tasks/{taskId}/status
+    // PUT - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/status
 
     @PutMapping("/{taskId}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public TaskResponse findTaskByIdAndUpdateTaskStatus(
+            @PathVariable Long projectId,
             @PathVariable Long taskId,
             @RequestBody Map<String, Long> statusPayload
     ) {
         Long newStatusId = statusPayload.get("statusId");
-        Task updatedTask = taskService.findTaskByIdAndUpdateTaskStatus(taskId, newStatusId);
+        Task updatedTask = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, newStatusId);
         return TaskResponse.fromEntity(updatedTask);
     }
 
 
     // ---------------- COMPLETA/RIAPRI TASK ----------------
 
-    // PUT - COMPLETE TASK - http://localhost:3001/api/tasks/{taskId}/complete
+    // PUT - COMPLETE TASK - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/complete
 
     @PutMapping("/{taskId}/complete")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public TaskResponse completeTask(
+            @PathVariable Long projectId,
             @PathVariable Long taskId
     ) {
-        var task = taskService.completeTask(taskId);
+        var task = taskService.completeTask(projectId, taskId);
         return TaskResponse.fromEntity(task);
     }
 
-    // PUT - REOPEN COMPLETED TASK - http://localhost:3001/api/tasks/{taskId}/reopen
+    // PUT - REOPEN COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/reopen
 
     @PutMapping("/{taskId}/reopen")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public TaskResponse reopenTask(
+            @PathVariable Long projectId,
             @PathVariable Long taskId
     ) {
-        var task = taskService.reopenCompletedTask(taskId);
+        var task = taskService.reopenCompletedTask(projectId, taskId);
         return TaskResponse.fromEntity(task);
     }
 
     // ---------------- FILTRI CUSTOM PER TASK ----------------
 
-    // GET - http://localhost:3001/api/tasks/search?parametri
+    // GET - http://localhost:3001/api/projects/{projectId}/tasks/search?params
 
-    @GetMapping("/search")
+    @GetMapping("/search?params")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Page<TaskResponse> searchTasks(
 
-            // parametri che si aggiungeranno con @RequestParam alla stringa URL dopo "search" coem parte del path
+            // parametri che si aggiungeranno con @RequestParam alla stringa URL dopo "search" come parte del path
 
             @RequestParam(required = false) Long projectId,
             @RequestParam(required = false) Long statusId,

@@ -34,5 +34,4 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     @JsonBackReference
     private Set<Task> tasks = new HashSet<>();
-
 }

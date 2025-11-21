@@ -39,33 +39,20 @@ public class TaskService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    // FIND_ALL (paginato)
-
-    public Page<Task> findAllTask(int pageNumber,
-                                  int pageSize,
-                                  String sortBy) {
-        if (pageSize > 50) pageSize = 50;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).ascending());
-        return this.taskRepository.findAll(pageable);
-    }
-
     // FIND_ALL (non-paginato)
 
-    public List<Task> findAllTaskWithNoPagination() {
-        return this.taskRepository.findAll();
+    public List<Task> findAllTaskByProjectId(Long projectId) {
+        return this.taskRepository.findByProject_ProjectId(projectId);
     }
 
     // SAVE
 
-    public Task createTask(TaskCreateRequest payload, Long creatorId) {
+    public Task createTask(Long projectId, TaskCreateRequest payload, Long creatorId) {
 
         User foundCreator = userService.findUserById(creatorId);
 
         Project foundProject = projectRepository.findById(payload.projectId())
                 .orElseThrow(() -> new NotFoundException("Project not found."));
-
-//        Task_Status foundStatus = task_statusRepository.findById(payload.statusId())
-//                .orElseThrow(() -> new NotFoundException("Status not found."));
 
         Task task = new Task(
                 payload.taskTitle(),
@@ -75,8 +62,6 @@ public class TaskService {
         );
         task.setCreator(foundCreator);
         task.setProject(foundProject);
-//        task.setStatus(foundStatus);
-        System.out.println("Aggiorno expiryDate a: " + payload.taskExpiryDate());
 
         if (payload.categoryIds() != null && !payload.categoryIds().isEmpty()) {
             Set<Category> categories = payload.categoryIds().
@@ -93,10 +78,10 @@ public class TaskService {
 
     // FIND_BY_ID
 
-    public Task findTaskById(Long taskId) {
+    public Task findTaskByIdAndProject(Long taskId, Long projectId) {
         return this.taskRepository.
-                findById(taskId).
-                orElseThrow(() -> new NotFoundException("Task with ID " + taskId + " has not been found."));
+                findByTaskIdAndProject_ProjectId(taskId, projectId).
+                orElseThrow(() -> new NotFoundException("Task with ID " + taskId + " has not been found in Project " + projectId));
     }
 
     // FIND_TASK_BY_PROJECT
@@ -108,15 +93,14 @@ public class TaskService {
 
     // FIND_BY_STATUS
 
-    public List<Task> findTaskByStatus(Long statusId) {
-        return this.taskRepository.findByStatus_TaskStatusId(statusId);
+    public List<Task> findTaskByProjectAndStatus(Long projectId, Long statusId) {
+        return this.taskRepository.findByProject_ProjectIdAndStatus_TaskStatusId(projectId, statusId);
     }
 
     // FIND_BY_ASSIGNEE
 
-    public List<Task> findTaskByAssignee(Long userId) {
-        return this.task_assigneeRepository.
-                findByUser_UserId(userId).
+    public List<Task> findTaskByProjectAndAssignee(Long projectId, Long userId) {
+        return task_assigneeRepository.findByTask_TaskIdAndUser_UserId(projectId, userId).
                 stream().
                 map(Task_Assignee::getTask).
                 toList();
@@ -196,8 +180,8 @@ public class TaskService {
 
     // FIND_BY_ID_AND_UPDATE
 
-    public Task findTaskByIdAndUpdate(Long taskId, TaskUpdateRequest payload) {
-        Task foundTask = findTaskById(taskId);
+    public Task findTaskByIdAndUpdate(Long taskId, Long projectId, TaskUpdateRequest payload) {
+        Task foundTask = findTaskByIdAndProject(taskId, projectId);
 
         if (payload.taskTitle() != null && !payload.taskTitle().isBlank()) {
             foundTask.setTaskTitle(payload.taskTitle());
@@ -237,17 +221,17 @@ public class TaskService {
 
     // FIND_BY_ID_AND_DELETE
 
-    public void findTaskByIdAndDelete(Long taskId) {
+    public void findTaskByIdAndProjectAndDelete(Long taskId, Long projectId) {
 
-        Task foundTask = findTaskById(taskId);
+        Task foundTask = findTaskByIdAndProject(taskId, projectId);
 
         this.taskRepository.delete(foundTask);
     }
 
     // FIND TASK BY ID AND CREATE/UPDATE STATUS
 
-    public Task findTaskByIdAndUpdateTaskStatus(Long taskId, Long taskStatusId) {
-        Task task = findTaskById(taskId);
+    public Task findTaskByIdAndProjectAndUpdateTaskStatus(Long taskId, Long projectId, Long taskStatusId) {
+        Task task = findTaskByIdAndProject(taskId, projectId);
         Task_Status status = task_statusRepository.findByTaskStatusId(taskStatusId)
                 .orElseThrow(() -> new NotFoundException("Status not found: " + taskStatusId));
         task.setStatus(status);
@@ -256,9 +240,9 @@ public class TaskService {
 
     // ASSIGN USER TO TASK
 
-    public Task assignUserToTask(Long taskId, Long userId) {
+    public Task assignUserToTask(Long projectId, Long taskId, Long userId) {
 
-        Task foundTask = findTaskById(taskId);
+        Task foundTask = findTaskByIdAndProject(taskId, projectId);
 
         User foundUser = userService.findUserById(userId);
 
@@ -276,7 +260,7 @@ public class TaskService {
 
     // REMOVE USER FROM TASK
 
-    public void removeUserFromTask(Long taskId, Long userId) {
+    public void removeUserFromTask(Long projectId, Long taskId, Long userId) {
 
         Task_Assignee foundTask_Assignee = task_assigneeRepository.findByTask_TaskIdAndUser_UserId(taskId, userId).
                 orElseThrow(() -> new NotFoundException("Assignment not found."));
@@ -286,9 +270,9 @@ public class TaskService {
 
     // COMPLETE TASK
 
-    public Task completeTask(Long taskId) {
+    public Task completeTask(Long projectId, Long taskId) {
 
-        Task foundTask = findTaskById(taskId);
+        Task foundTask = findTaskByIdAndProject(taskId, projectId);
 
         if (foundTask.isCompleted()) {
             throw new BadRequestException("Task already completed.");
@@ -300,9 +284,9 @@ public class TaskService {
 
     // REOPEN COMPLETED TASK
 
-    public Task reopenCompletedTask(Long taskId) {
+    public Task reopenCompletedTask(Long projectId, Long taskId) {
 
-        Task foundTask = findTaskById(taskId);
+        Task foundTask = findTaskByIdAndProject(projectId, taskId);
 
         if (!foundTask.isCompleted()) {
             throw new BadRequestException("Task is not completed.");

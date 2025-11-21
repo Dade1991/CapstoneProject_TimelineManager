@@ -1,6 +1,8 @@
 package davidebraghi.CapstoneProject_TimelineManager.repositories;
 
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +11,8 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+
+    Page<Project> findByProjectNameContainingIgnoreCase(String projectName, Pageable pageable);
 
     // cerca i progetti per uno specifico creatore(user)
 

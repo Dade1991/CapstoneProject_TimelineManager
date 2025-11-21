@@ -12,7 +12,7 @@ public interface Task_AssigneeRepository extends JpaRepository<Task_Assignee, Lo
 
     // cerca tutti gli users assegnati ad uno specifico task
 
-    List<Task_Assignee> findByTask_TaskId(Long taskId);
+//    List<Task_Assignee> findByTask_TaskId(Long projectId, Long taskId);
 
     // cerca tutti i tasks assegnati ad uno specifico user
 
