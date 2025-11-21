@@ -30,4 +30,8 @@ public interface Task_AssigneeRepository extends JpaRepository<Task_Assignee, Lo
     // conta quanti tasks sono assegnati ad uno specifico user
 
     Long countByUser_UserId(Long userId);
+
+    // conta quanti task sono assegnati per progetto ad uno specifico user
+
+    int countByTask_Project_ProjectIdAndUser_UserId(Long projectId, Long userId);
 }

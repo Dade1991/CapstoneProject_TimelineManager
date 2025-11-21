@@ -10,6 +10,7 @@ import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationExcepti
 import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
 import davidebraghi.CapstoneProject_TimelineManager.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -28,8 +29,19 @@ public class UserController {
     @Autowired
     private ProjectService projectService;
 
-    // GET - FIND_BY_ID (profilo user loggato) - http://localhost:3001/api/users/me
+    // GET - FIND_ALL_USER (paginato)
 
+    @GetMapping
+    public Page<UserResponse> getAllUsers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "name") String sortBy) {
+
+        Page<User> usersPage = userService.findAllUsers(pageNumber, pageSize, sortBy);
+        return usersPage.map(UserResponse::fromEntity);
+    }
+
+    // GET - FIND_BY_ID (profilo user loggato) - http://localhost:3001/api/users/me
 
     @GetMapping("/profile")
     public UserResponse getPersonalProfile(@AuthenticationPrincipal User user) {

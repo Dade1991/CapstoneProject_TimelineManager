@@ -169,9 +169,6 @@ public class ProjectController {
             @PathVariable Long projectId,
             @AuthenticationPrincipal User currentUser
     ) {
-        return projectService.getProjectMembers(projectId)
-                .stream()
-                .map(MemberResponse::fromEntity)
-                .toList();
+        return projectService.getProjectMembers(projectId);
     }
 }

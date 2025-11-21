@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.services;
 
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Member_DTO_RequestsAndResponses.MemberResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectCreateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectUpdateRequest;
@@ -9,10 +10,7 @@ import davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM;
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.CategoryRepository;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.ProjectRepository;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.Project_User_RoleRepository;
-import davidebraghi.CapstoneProject_TimelineManager.repositories.User_RoleRepository;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,6 +38,8 @@ public class ProjectService {
     private UserService userService;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private Task_AssigneeRepository task_assigneeRepository;
 
     // FIND_ALL (paginato)
 
@@ -255,8 +255,19 @@ public class ProjectService {
 
     // cerca tutti gli users di uno specifico progetto
 
-    public List<Project_User_Role> getProjectMembers(Long projectId) {
-        return project_user_roleRepository.findByProject_ProjectId(projectId);
+//    public List<Project_User_Role> getProjectMembers(Long projectId) {
+//        return project_user_roleRepository.findByProject_ProjectId(projectId);
+//    }
+
+    public List<MemberResponse> getProjectMembers(Long projectId) {
+        List<Project_User_Role> relations = project_user_roleRepository.findByProject_ProjectId(projectId);
+
+        return relations.stream()
+                .map(rel -> {
+                    int taskCount = task_assigneeRepository.countByTask_Project_ProjectIdAndUser_UserId(projectId, rel.getUser().getUserId());
+                    return MemberResponse.fromEntity(rel, taskCount);
+                })
+                .toList();
     }
 
     // logica di permessi del progetto (collegamento e comparazione con Switch dei dati):
