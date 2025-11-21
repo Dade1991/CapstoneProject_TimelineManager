@@ -3,12 +3,13 @@ package davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_Req
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record ProjectResponse(
         Long projectId,
         String projectName,
         String projectDescription,
-        LocalDate creationDate,
+        LocalDateTime creationDate,
         LocalDate expiryDate,
         Long creatorId,
         int memberCount,

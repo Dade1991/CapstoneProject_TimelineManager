@@ -22,6 +22,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findByProjectNameContainingIgnoreCase(String projectName);
 
+    // metodo per recuperare tutti i progetti ordinati per creationDate ascendente
+
+    List<Project> findAllByOrderByCreationDateAsc();
+
+    // metodo paginato con ordinamento per creationDate ascendente
+
+    Page<Project> findAllByOrderByCreationDateAsc(Pageable pageable);
+    
     // cerca i progetti che scadono prima di una specifica data;
 
     List<Project> findByExpiryDateBefore(LocalDate expiryDate);

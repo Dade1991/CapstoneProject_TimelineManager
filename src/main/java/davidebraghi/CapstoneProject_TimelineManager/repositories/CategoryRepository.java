@@ -19,11 +19,17 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findByCategoryNameIgnoreCase(String categoryName);
 
-    // verifica l'esistenza di una determinata Category
+    // verifica l'esistenza di una determinata Category (due per due casi differenti)
 
     boolean existsByProjectAndCategoryNameIgnoreCase(Project project, String categoryName);
+
+    Optional<Category> findByProjectAndCategoryNameIgnoreCase(Project project, String categoryName);
 
     // restituisce tutte le categorie di un progetto
 
     List<Category> findByProject_ProjectId(Long projectId);
+
+    // restituisce tutte le categorie di un progetto
+
+    Optional<Category> findByCategoryIdAndProject_ProjectId(Long categoryId, Long projectId);
 }

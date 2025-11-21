@@ -1,6 +1,7 @@
 package davidebraghi.CapstoneProject_TimelineManager.services;
 
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectCreateRequest;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.RoleChange_DTO_RequestsAndResponses.RoleChangeResponse;
 import davidebraghi.CapstoneProject_TimelineManager.entities.*;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -72,15 +74,24 @@ public class ProjectService {
 
         Project savedProject = projectRepository.save(project);
 
-        // Assegnare il creatore come ADMIN
+        // assegnare il creatore come ADMIN
 
         assignUserToProject(savedProject.getProjectId(), creatorId, RoleNameENUM.CREATOR);
 
-        // Crea categoria di default per il progetto appena creato
+        // crea categoria di default per il progetto appena creato
 
         createDefaultCategoryForProject(savedProject);
 
         return savedProject;
+    }
+
+    // recupera tutti i progetti ordinati per data creazione (completa lista senza paginazione)
+
+    public List<ProjectResponse> findAllProjectsOrdered() {
+        return projectRepository.findAllByOrderByCreationDateAsc()
+                .stream()
+                .map(ProjectResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
     // crea una Category di default all'avvio di ogni progetto
@@ -95,8 +106,18 @@ public class ProjectService {
         Category defaultCategory = new Category();
         defaultCategory.setProject(project);
         defaultCategory.setCategoryName("Default");
-        defaultCategory.setCategoryColor("#000000"); // colore di default grigio chiaro
+        defaultCategory.setCategoryColor("#000000");
         categoryRepository.save(defaultCategory);
+    }
+
+    // recupera progetti paginati e ordinati per data creazione
+
+    public Page<ProjectResponse> findAllProjectsPaged(int pageNumber, int pageSize) {
+        if (pageSize > 50) pageSize = 50;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").ascending());
+
+        return projectRepository.findAll(pageable)
+                .map(ProjectResponse::fromEntity);
     }
 
     // FIND_BY_ID

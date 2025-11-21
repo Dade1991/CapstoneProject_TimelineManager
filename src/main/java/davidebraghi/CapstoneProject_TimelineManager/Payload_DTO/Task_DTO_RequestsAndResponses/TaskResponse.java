@@ -27,7 +27,8 @@ public record TaskResponse(
         int commentCount,
         boolean isCompleted,
         boolean isOverdue,
-        Set<CategoryResponse> categories
+        Set<CategoryResponse> categories,
+        Integer position
 ) {
 
     // converte la "taskEntity" in "taskResponse"
@@ -60,7 +61,8 @@ public record TaskResponse(
                 task.getCommentCount(),
                 task.isCompleted(),
                 task.isOverdue(),
-                categoryResponses
+                categoryResponses,
+                task.getPosition()
         );
     }
 }

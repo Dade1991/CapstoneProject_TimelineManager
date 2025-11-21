@@ -13,8 +13,6 @@ import davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -40,21 +37,29 @@ public class ProjectController {
                 .map(ProjectResponse::fromEntity)
                 .toList();
     }
+
     // GET - FIND_ALL (paginato) - http://localhost:3001/api/projects
 
+//    @GetMapping
+//    public Page<ProjectResponse> getAllProject(
+//            @RequestParam(defaultValue = "0") int pageNumber,
+//            @RequestParam(defaultValue = "10") int pageSize,
+//            @RequestParam(defaultValue = "projectId") String sortBy) {
+//
+//        Page<Project> projectsPage = projectService.findAllProject(pageNumber, pageSize, sortBy);
+//
+//        List<ProjectResponse> projectsDTO = projectsPage.stream()
+//                .map(ProjectResponse::fromEntity)
+//                .collect(Collectors.toList());
+//
+//        return new PageImpl<>(projectsDTO, projectsPage.getPageable(), projectsPage.getTotalElements());
+//    }
+
+    // GET - FIND_ALL (per data di creazione ASC)
+
     @GetMapping
-    public Page<ProjectResponse> getAllProject(
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "projectId") String sortBy) {
-
-        Page<Project> projectsPage = projectService.findAllProject(pageNumber, pageSize, sortBy);
-
-        List<ProjectResponse> projectsDTO = projectsPage.stream()
-                .map(ProjectResponse::fromEntity)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(projectsDTO, projectsPage.getPageable(), projectsPage.getTotalElements());
+    public List<ProjectResponse> getAllProjectsOrdered() {
+        return projectService.findAllProjectsOrdered();
     }
 
     // GET - FIND_BY_ID  - http://localhost:3001/api/projects/{projectId}

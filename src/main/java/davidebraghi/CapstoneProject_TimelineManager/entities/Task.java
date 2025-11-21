@@ -41,6 +41,8 @@ public class Task {
     private LocalDate completedAt;
     @Column(name = "expiryDate")
     private LocalDate taskExpiryDate;
+    @Column(name = "task_position")
+    private Integer position;
 
     // relazioni
 
@@ -49,11 +51,11 @@ public class Task {
     @JsonIgnore
     private Project project;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "taskStatusId")
+    @JoinColumn(name = "status")
     @JsonIgnore
     private Task_Status status;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "creatorUserId", nullable = false)
+    @JoinColumn(name = "creator", nullable = false)
     @JsonIgnore
     private User creator;
     @ManyToOne
@@ -71,8 +73,8 @@ public class Task {
     private List<Activity_Log> activities;
     @ManyToMany
     @JoinTable(
-            name = "task_category",
-            joinColumns = @JoinColumn(name = "taskId"),
+            name = "categories",
+            joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "categoryId")
     )
     @JsonManagedReference

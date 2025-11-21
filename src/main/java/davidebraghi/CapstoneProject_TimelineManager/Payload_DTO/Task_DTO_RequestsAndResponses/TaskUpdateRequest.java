@@ -21,6 +21,8 @@ public record TaskUpdateRequest(
         @Future(message = "Expiry date shall be in future.")
         LocalDate taskExpiryDate,
 
-        Set<Long> categoryIds
+        Set<Long> categoryIds,
+
+        Integer position
 ) {
 }

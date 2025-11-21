@@ -74,7 +74,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initializeUsers() {
 
-        // ----------------- ADMIN USER -----------------
+        // ----------------- ADMIN USER 1-----------------
 
         createUserIfNotExists(
                 "davideB@demo.com",
@@ -84,7 +84,7 @@ public class DataInitializer implements CommandLineRunner {
                 "admin1234"
         );
 
-        // ----------------- TEST USER 1 -----------------
+        // ----------------- TEST USER 2 -----------------
 
         createUserIfNotExists(
                 "claraS@demo.com",
@@ -94,7 +94,7 @@ public class DataInitializer implements CommandLineRunner {
                 "user1234"
         );
 
-        // ----------------- TEST USER 2 -----------------
+        // ----------------- TEST USER 3 -----------------
 
         createUserIfNotExists(
                 "riccardoM@demo.com",
@@ -104,7 +104,7 @@ public class DataInitializer implements CommandLineRunner {
                 "user1234"
         );
 
-        // ----------------- TEST USER 3 -----------------
+        // ----------------- TEST USER 4 -----------------
 
         createUserIfNotExists(
                 "tizianaB@demo.com",
@@ -114,7 +114,7 @@ public class DataInitializer implements CommandLineRunner {
                 "user1234"
         );
 
-        // ----------------- TEST USER 4 -----------------
+        // ----------------- TEST USER 5 -----------------
 
         createUserIfNotExists(
                 "eliaG@demo.com",

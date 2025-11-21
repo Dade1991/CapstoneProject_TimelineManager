@@ -5,7 +5,6 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_Req
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_RequestsAndResponses.CategoryUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Category;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
-import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.CategoryRepository;
@@ -64,7 +63,7 @@ public class CategoryService {
 
     public CategoryResponse createCategory(CategoryCreateRequest payload) {
         Project project = projectService.findProjectById(payload.projectId());
-        
+
         boolean isDefaultCategoryExists = categoryRepository.existsByProjectAndCategoryNameIgnoreCase(project, payload.categoryName());
 
         if (isDefaultCategoryExists) {
@@ -83,13 +82,10 @@ public class CategoryService {
     // FIND_BY_ID
 
     public Category findCategoryByIdAndProject(Long categoryId, Long projectId) {
-        Category category = findCategoryById(categoryId);
-        if (!category.getProject().getProjectId().equals(projectId)) {
-            throw new BadRequestException("Category with ID " + categoryId + " does not belong to Project " + projectId);
-        }
-        return category;
+        return categoryRepository.findByCategoryIdAndProject_ProjectId(categoryId, projectId)
+                .orElseThrow(() -> new NotFoundException("Category with ID " + categoryId + " has not been found in Project " + projectId));
     }
-
+    
     // FIND_BY_ID (CategoryResponse)
 
     public CategoryResponse findCategoryResponseById(Long projectId, Long categoryId) {
@@ -101,12 +97,11 @@ public class CategoryService {
 
     public void findCategoryByIdAndDelete(Long projectId, Long categoryId) {
         Category foundCategory = findCategoryByIdAndProject(categoryId, projectId);
-        for (Task task : foundCategory.getTasks()) {
-            task.getCategories().remove(foundCategory);
-        }
+        foundCategory.getTasks().forEach(task -> task.getCategories().remove(foundCategory));
         foundCategory.getTasks().clear();
 
-        this.categoryRepository.delete(foundCategory);
+        categoryRepository.delete(foundCategory);
+        log.info("Category with ID " + categoryId + " deleted from Project " + projectId);
     }
 
 //    -------- HELPER --------

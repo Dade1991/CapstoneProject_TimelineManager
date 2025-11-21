@@ -20,9 +20,10 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     List<Task> findByProject_ProjectId(Long projectId);
 
-    // cerca tutti i task di uno specifico progetto (paginato)
+    // recupera la posizione massima delle task di un progetto
 
-    Page<Task> findByProject_ProjectId(Long projectId, Pageable pageable);
+    @Query("SELECT MAX(t.position) FROM Task t WHERE t.project.projectId = :projectId")
+    Integer findMaxPositionByProjectId(@Param("projectId") Long projectId);
 
     // cerca i task di uno specifico progetto CON categorie caricate (JOIN FETCH)
 
@@ -33,49 +34,74 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     List<Task> findByProject_ProjectIdAndStatus_TaskStatusId(Long projectId, Long statusId);
 
-    // cerca i task creati da uno specifico user
+    // cerca task per id, progetto e categoria (modifica aggiunta)
 
-//    List<Task> findByTask_Project_ProjectIdAndUser_UserId(Long projectId, Long userId);
-
-//    List<Task> findByProject_ProjectIdAndUser_UserId(Long projectId, Long userId);
+    @Query("SELECT DISTINCT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
+    List<Task> findByProjectIdAndCategoryId(@Param("projectId") Long projectId,
+                                            @Param("categoryId") Long categoryId);
 
     // cerca task con paginazione e categoria
 
     Page<Task> findDistinctByCategories_CategoryIdIn(List<Long> categoryIds, Pageable pageable);
 
-    // cerca task per id e progetto (per il servizio)
+    // cerca task per id e progetto (per il servizio) [ORDINE GIUSTO]
 
-    Optional<Task> findByTaskIdAndProject_ProjectId(Long taskId, Long projectId); // Per la ricerca con doppio filtro
+    Optional<Task> findByProject_ProjectIdAndTaskId(Long projectId, Long taskId);
 
     // conta quanti tasks sono presenti in uno specifico progetto
 
     long countByProject_ProjectId(Long projectId);
 
-    // cerca i task non completati
-
-    List<Task> findByProject_ProjectIdAndCompletedAtIsNull(Long projectId);
-
-    // cerca i task completati
-
-    List<Task> findByProject_ProjectIdAndCompletedAtIsNotNull(Long projectId);
-
-    //    _______________________________________________________
-
-    // cerca i task scaduti
-
-    List<Task> findByTaskExpiryDateBefore(LocalDate date);
-
-    // cerca i task non ancora scaduti
-
-    List<Task> findByTaskExpiryDateAfter(LocalDate date);
-
-
     // conta quanti tasks sono stati creati da uno specifico user
 
     long countByCreator_UserId(Long userId);
 
+    // cerca tutti i task di uno specifico progetto (paginato)
+
+    Page<Task> findByProject_ProjectId(Long projectId, Pageable pageable);
+
+    // cerca tutti i task ordinati per position
+
+    List<Task> findByProject_ProjectIdOrderByPositionAsc(Long projectId);
+
+    //    _______________________________________________________
+
+    // conta le task non completate di un progetto e categoria specifica
+
+    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.completedAt IS NULL")
+    long countByProjectIdAndCategoryIdAndCompletedAtIsNull(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
+
+    // conta le task completate di un progetto e categoria specifica
+
+    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE " +
+            "t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.completedAt IS NOT NULL")
+    long countByProjectIdAndCategoryIdAndCompletedAtIsNotNull(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
+
+    // conta tutte le task di un progetto e categoria specifica
+
+    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
+    long countByProjectIdAndCategoryId(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
+
     // conta quanti tasks non sono stati completati globalmente
 
-    long countByCompletedAtIsNull();
+    long countByProject_ProjectIdAndCompletedAtIsNull(Long projectId);
 
+    // conta quanti tasks sono stati completati globalmente
+
+    long countByProject_ProjectIdAndCompletedAtIsNotNull(Long projectId);
+
+    // cerca task scaduti in un progetto (indipendentemente da categoria)
+
+    List<Task> findByProject_ProjectIdAndTaskExpiryDateBefore(Long projectId, LocalDate date);
+
+    // cerca task non scaduti in un progetto
+
+    List<Task> findByProject_ProjectIdAndTaskExpiryDateAfter(Long projectId, LocalDate date);
+
+    // cerca task filtrato per categoria
+
+    @Query("SELECT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.taskId = :taskId")
+    Optional<Task> findByProject_ProjectIdAndCategoryIdAndTaskId(@Param("projectId") Long projectId,
+                                                                 @Param("categoryId") Long categoryId,
+                                                                 @Param("taskId") Long taskId);
 }

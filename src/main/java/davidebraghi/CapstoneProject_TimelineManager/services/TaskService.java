@@ -39,20 +39,23 @@ public class TaskService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    // FIND_ALL (non-paginato)
-
-    public List<Task> findAllTaskByProjectId(Long projectId) {
-        return this.taskRepository.findByProject_ProjectId(projectId);
-    }
-
     // SAVE
 
     public Task createTask(Long projectId, TaskCreateRequest payload, Long creatorId) {
-
-        User foundCreator = userService.findUserById(creatorId);
-
-        Project foundProject = projectRepository.findById(payload.projectId())
+        User creator = userService.findUserById(creatorId);
+        Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new NotFoundException("Project not found."));
+
+        Set<Category> categories;
+
+        if (payload.categoryIds() == null || payload.categoryIds().isEmpty()) {
+            // *** Se non sono passate categorie, assegna automaticamente la categoria Default ***
+            Category defaultCategory = categoryRepository.findByProjectAndCategoryNameIgnoreCase(project, "Default")
+                    .orElseThrow(() -> new NotFoundException("Default category not found for project"));
+            categories = Set.of(defaultCategory);
+        } else {
+            categories = fetchAndValidateCategories(payload.categoryIds(), projectId);
+        }
 
         Task task = new Task(
                 payload.taskTitle(),
@@ -60,28 +63,152 @@ public class TaskService {
                 payload.taskPriority(),
                 payload.taskExpiryDate()
         );
-        task.setCreator(foundCreator);
-        task.setProject(foundProject);
 
-        if (payload.categoryIds() != null && !payload.categoryIds().isEmpty()) {
-            Set<Category> categories = payload.categoryIds().
-                    stream().
-                    map(id -> categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category with ID " + id + " has not been found."))).
-                    collect(Collectors.toSet());
-            task.setCategories(categories);
+        task.setCreator(creator);
+        task.setProject(project);
+        task.setCategories(categories);
+
+        if (payload.position() != null) {
+            task.setPosition(payload.position());
+        } else {
+            Integer maxPosition = taskRepository.findMaxPositionByProjectId(projectId);
+            task.setPosition(maxPosition == null ? 1 : maxPosition + 1);
         }
 
-        Task savedTask = taskRepository.save(task);
-
-        return savedTask;
+        return taskRepository.save(task);
     }
 
-    // FIND_BY_ID
+    // FIND TASK BY PROJECT, CATEGORY & TASK ID
 
-    public Task findTaskByIdAndProject(Long taskId, Long projectId) {
-        return this.taskRepository.
-                findByTaskIdAndProject_ProjectId(taskId, projectId).
-                orElseThrow(() -> new NotFoundException("Task with ID " + taskId + " has not been found in Project " + projectId));
+    public Task findTaskByProjectCategoryAndTaskId(Long projectId, Long categoryId, Long taskId) {
+        Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Task with ID " + taskId + " has not been found in Project " + projectId));
+
+        boolean inCategory = task.getCategories().stream()
+                .anyMatch(cat -> cat.getCategoryId().equals(categoryId));
+
+        if (!inCategory) {
+            throw new BadRequestException(
+                    "Task with ID " + taskId + " does not belong to Category " + categoryId);
+        }
+
+        return task;
+    }
+
+    // UPDATE TASK CATEGORY
+
+    public Task updateTaskCategories(Long projectId, Long taskId, List<Long> categoryIds) {
+        // Recupera la task in base a projectId e taskId
+        Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found for project " + projectId + " and task " + taskId));
+
+        // Recupera le categorie in base agli ID forniti
+        Set<Category> categories = categoryRepository.findAllById(categoryIds)
+                .stream()
+                .collect(Collectors.toSet());
+
+        // Aggiorna le categorie assegnate alla task
+        task.setCategories(categories);
+
+        // Salva la task con le categorie aggiornate
+        return taskRepository.save(task);
+    }
+
+    // FIND_BY_ID_AND_UPDATE
+
+    public Task updateTask(Long projectId, Long categoryId, Long taskId, TaskUpdateRequest payload) {
+        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+
+        if (payload.taskTitle() != null && !payload.taskTitle().isBlank()) {
+            task.setTaskTitle(payload.taskTitle());
+        }
+
+        if (payload.taskDescription() != null) {
+            task.setTaskDescription(payload.taskDescription());
+        }
+
+        if (payload.taskPriority() != null) {
+            task.setTaskPriority(payload.taskPriority());
+        }
+
+        if (payload.taskExpiryDate() != null) {
+            task.setTaskExpiryDate(payload.taskExpiryDate());
+        }
+
+        if (payload.categoryIds() != null) {
+            Set<Category> categories = fetchAndValidateCategories(payload.categoryIds(), projectId);
+            task.getCategories().clear();
+            task.getCategories().addAll(categories);
+        }
+
+        if (payload.position() != null) {
+            task.setPosition(payload.position());
+        }
+
+        return taskRepository.save(task);
+    }
+
+    // UPDATE
+
+
+    // FIND_BY_ID_AND_DELETE
+
+    public void deleteTask(Long projectId, Long categoryId, Long taskId) {
+        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+        taskRepository.delete(task);
+    }
+
+    // FIND TASK BY PROJECT AND CATEGORY ID
+
+    public List<Task> findTaskByProjectCategory(Long projectId, Long categoryId) {
+        return taskRepository.findByProjectIdAndCategoryId(projectId, categoryId);
+    }
+
+    // COMPLETE TASK
+
+    public Task completeTask(Long projectId, Long categoryId, Long taskId) {
+        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+        if (task.isCompleted()) {
+            throw new BadRequestException("Task already completed.");
+        }
+        task.setCompletedAt(LocalDate.now());
+        return taskRepository.save(task);
+    }
+
+    // REOPEN COMPLETED TASK
+
+    public Task reopenCompletedTask(Long projectId, Long categoryId, Long taskId) {
+        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+        if (!task.isCompleted()) {
+            throw new BadRequestException("Task is not completed.");
+        }
+        task.setCompletedAt(null);
+        return taskRepository.save(task);
+    }
+
+    //    ======== STATUS ========
+
+    // FIND TASK BY ID AND CREATE/UPDATE STATUS
+
+    public Task findTaskByIdAndProjectAndUpdateTaskStatus(Long projectId, Long taskId, Long taskStatusId) {
+        Task foundTask = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found for project " + projectId + " and task " + taskId));
+
+        Task_Status status = task_statusRepository.findByTaskStatusId(taskStatusId)
+                .orElseThrow(() -> new NotFoundException("Status not found: " + taskStatusId));
+
+        foundTask.setStatus(status);
+
+        return taskRepository.save(foundTask);
+    }
+
+    //    ======== METODI UTLITY ========
+
+    // FIND_ALL (non-paginato)
+
+    public List<Task> findAllTaskByProjectId(Long projectId) {
+        return this.taskRepository.findByProject_ProjectId(projectId);
     }
 
     // FIND_TASK_BY_PROJECT
@@ -106,7 +233,7 @@ public class TaskService {
                 toList();
     }
 
-    // FIND_WITH_SMART_FILTERS
+    // ======== FIND_WITH_SMART_FILTERS ========
 
     public Page<Task> findTasksWithSmartFilters(
             Long projectId,
@@ -178,121 +305,67 @@ public class TaskService {
         return taskRepository.findAll(spec, pageable);
     }
 
-    // FIND_BY_ID_AND_UPDATE
+    // ===========================================================
 
-    public Task findTaskByIdAndUpdate(Long taskId, Long projectId, TaskUpdateRequest payload) {
-        Task foundTask = findTaskByIdAndProject(taskId, projectId);
-
-        if (payload.taskTitle() != null && !payload.taskTitle().isBlank()) {
-            foundTask.setTaskTitle(payload.taskTitle());
-        }
-        if (payload.taskDescription() != null) {
-            foundTask.setTaskDescription(payload.taskDescription());
-        }
-        if (payload.taskPriority() != null) {
-            foundTask.setTaskPriority(payload.taskPriority());
-        }
-//        if (payload.statusId() != null) {
-//            Task_Status foundStatus = task_statusRepository.findById(payload.statusId())
-//                    .orElseThrow(() -> new NotFoundException("Status with ID " + payload.statusId() + " has not been found."));
-//            foundTask.setStatus(foundStatus);
-//        }
-        if (payload.taskExpiryDate() != null) {
-            foundTask.setTaskExpiryDate(payload.taskExpiryDate());
-        }
-        if (payload.categoryIds() != null) {
-            Set<Category> categories = payload.categoryIds()
-                    .stream()
-                    .map(id -> categoryRepository.findById(id)
-                            .orElseThrow(() -> new NotFoundException("Category with ID " + id + " not found.")))
-                    .collect(Collectors.toSet());
-
-            // Rimuovi prima tutte le categorie esistenti per evitare duplicati
-            foundTask.getCategories().clear();
-            foundTask.getCategories().addAll(categories);
-        }
-
-        return saveTaskChanges(foundTask);
-    }
+    //    -------- HELPER--------
 
     public Task saveTaskChanges(Task task) {
         return taskRepository.save(task);
     }
 
-    // FIND_BY_ID_AND_DELETE
-
-    public void findTaskByIdAndProjectAndDelete(Long taskId, Long projectId) {
-
-        Task foundTask = findTaskByIdAndProject(taskId, projectId);
-
-        this.taskRepository.delete(foundTask);
-    }
-
-    // FIND TASK BY ID AND CREATE/UPDATE STATUS
-
-    public Task findTaskByIdAndProjectAndUpdateTaskStatus(Long taskId, Long projectId, Long taskStatusId) {
-        Task task = findTaskByIdAndProject(taskId, projectId);
-        Task_Status status = task_statusRepository.findByTaskStatusId(taskStatusId)
-                .orElseThrow(() -> new NotFoundException("Status not found: " + taskStatusId));
-        task.setStatus(status);
-        return taskRepository.save(task);
-    }
-
-    // ASSIGN USER TO TASK
-
-    public Task assignUserToTask(Long projectId, Long taskId, Long userId) {
-
-        Task foundTask = findTaskByIdAndProject(taskId, projectId);
-
-        User foundUser = userService.findUserById(userId);
-
-        if (task_assigneeRepository.findByTask_TaskIdAndUser_UserId(taskId, userId).isPresent()) {
-            throw new BadRequestException("User with ID " + userId + " has been already assigned to this task.");
+    private void validateCategoriesBelongToProject(Set<Category> categories, Long projectId) {
+        for (Category category : categories) {
+            if (!category.getProject().getProjectId().equals(projectId)) {
+                throw new BadRequestException(
+                        "Category ID " + category.getCategoryId() + " does not belong to Project " + projectId);
+            }
         }
-
-        Task_Assignee assignee = new Task_Assignee();
-        assignee.setTask(foundTask);
-        assignee.setUser(foundUser);
-
-        task_assigneeRepository.save(assignee);
-        return foundTask;
     }
 
-    // REMOVE USER FROM TASK
+    private Set<Category> fetchAndValidateCategories(Set<Long> categoryIds, Long projectId) {
+        if (categoryIds == null || categoryIds.isEmpty()) return Set.of();
 
-    public void removeUserFromTask(Long projectId, Long taskId, Long userId) {
+        Set<Category> categories = categoryIds.stream()
+                .map(id -> categoryRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("Category with ID " + id + " not found.")))
+                .collect(Collectors.toSet());
 
-        Task_Assignee foundTask_Assignee = task_assigneeRepository.findByTask_TaskIdAndUser_UserId(taskId, userId).
-                orElseThrow(() -> new NotFoundException("Assignment not found."));
-
-        task_assigneeRepository.delete(foundTask_Assignee);
+        validateCategoriesBelongToProject(categories, projectId);
+        return categories;
     }
 
-    // COMPLETE TASK
-
-    public Task completeTask(Long projectId, Long taskId) {
-
-        Task foundTask = findTaskByIdAndProject(taskId, projectId);
-
-        if (foundTask.isCompleted()) {
-            throw new BadRequestException("Task already completed.");
-        }
-
-        foundTask.setCompletedAt(LocalDate.now());
-        return taskRepository.save(foundTask);
-    }
-
-    // REOPEN COMPLETED TASK
-
-    public Task reopenCompletedTask(Long projectId, Long taskId) {
-
-        Task foundTask = findTaskByIdAndProject(projectId, taskId);
-
-        if (!foundTask.isCompleted()) {
-            throw new BadRequestException("Task is not completed.");
-        }
-
-        foundTask.setCompletedAt(null);
-        return taskRepository.save(foundTask);
+    public Task findTaskByProjectIdAndTaskId(Long projectId, Long taskId) {
+        return taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Task with ID " + taskId + " not found in Project " + projectId));
     }
 }
+
+//    ======= WAITING AREA =======
+
+// ASSIGN USER TO TASK
+
+//    public Task assignUserToTask(Long projectId, Long categoryId, Long taskId, Long userId) {
+//        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+//        User user = userService.findUserById(userId);
+//
+//        if (task_assigneeRepository.findByTask_TaskIdAndUser_UserId(taskId, userId).isPresent()) {
+//            throw new BadRequestException("User already assigned to this task.");
+//        }
+//
+//        Task_Assignee assignment = new Task_Assignee();
+//        assignment.setTask(task);
+//        assignment.setUser(user);
+//        task_assigneeRepository.save(assignment);
+//
+//        return task;
+//    }
+//
+//     REMOVE USER FROM TASK
+//
+//    public void removeUserFromTask(Long projectId, Long categoryId, Long taskId, Long userId) {
+//        Task_Assignee assignment = task_assigneeRepository.findByTask_TaskIdAndUser_UserId(taskId, userId)
+//                .orElseThrow(() -> new NotFoundException("Assignment not found."));
+//        task_assigneeRepository.delete(assignment);
+//    }
+
