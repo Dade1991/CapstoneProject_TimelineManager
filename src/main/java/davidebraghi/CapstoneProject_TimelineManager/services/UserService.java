@@ -71,9 +71,13 @@ public class UserService {
                 bcrypt.encode(payload.password())
         );
 
+        // prendo le iniziali di nome e cognome dello user
+
+        String initials = payload.name().substring(0, 1).toUpperCase() + payload.surname().substring(0, 1).toUpperCase();
+
         // upload della imageUrl
 
-        newUser.setAvatarUrl("https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname());
+        newUser.setAvatarUrl("https://ui-avatars.com/api/?name=" + initials);
 
         User savedUser = userRepository.save(newUser);
         log.info("User with ID " + savedUser.getUserId() + " successfully registered.");
@@ -151,7 +155,7 @@ public class UserService {
 
     // UPDATE_AVATAR_PROFILE_PIC
 
-    public User uploadAvatarProfilePic(MultipartFile file, Long userId) {
+    public User uploadAvatarProfilePic(Long userId, MultipartFile file) {
         if (file.isEmpty()) throw new BadRequestException("Empty file.");
         if (file.getSize() > MAX_SIZE)
             throw new BadRequestException("Warning, the file exceeding the limit of 5MB dimension.");
