@@ -14,7 +14,7 @@ public class CloudinaryConfig {
 
     @Bean
     public Cloudinary getAvatarImage(
-            @Value("${cloudinary.cloudinary_name}") String cloudinaryName,
+            @Value("${cloudinary.cloud_name}") String cloudinaryName,
             @Value("${cloudinary.api_key}") String apiKey,
             @Value("${cloudinary.api_secret}") String apiSecret) {
 
@@ -29,7 +29,7 @@ public class CloudinaryConfig {
         }
 
         Map<String, String> config = new HashMap<>();
-        config.put("cloudinary_name", cloudinaryName);
+        config.put("cloud_name", cloudinaryName);
         config.put("api_key", apiKey);
         config.put("api_secret", apiSecret);
         return new Cloudinary(config);

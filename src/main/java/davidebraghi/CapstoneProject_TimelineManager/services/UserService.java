@@ -168,8 +168,10 @@ public class UserService {
 
             // cattura dell'URL dell'immagine
 
+            log.info("Uploading avatar image via Cloudinary...");
             Map resultMap = getAvatarImage.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             String imageUrl = (String) resultMap.get("url");
+            log.info("Upload result: {}", resultMap);
 
             // salvataggio dell'imageUrL
 
@@ -177,6 +179,7 @@ public class UserService {
             this.userRepository.save(foundUser);
             return foundUser;
         } catch (Exception ex) {
+            log.error("Error during Cloudinary upload", ex);
             throw new BadRequestException("Error during image uploading.");
         }
     }

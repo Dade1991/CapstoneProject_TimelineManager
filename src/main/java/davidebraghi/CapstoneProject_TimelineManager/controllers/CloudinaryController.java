@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("api/users/{userId}/avatar")
 public class CloudinaryController {
-
+    
     @Autowired
     private UserService userService;
 
@@ -24,9 +24,13 @@ public class CloudinaryController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AvatarUrlUploadResponse> uploadAvatar(@PathVariable Long userId,
                                                                 @RequestParam("file") MultipartFile file) {
+        System.out.println("[CloudinaryController] uploadAvatar called for userId: " + userId);
+        System.out.println("[CloudinaryController] File received: " + (file != null ? file.getOriginalFilename() : "null"));
+
         try {
             User updatedUser = userService.uploadAvatarProfilePic(userId, file);
             String avatarUrl = updatedUser.getAvatarUrl();
+            System.out.println("[CloudinaryController] Upload successful. New avatarUrl: " + avatarUrl);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new AvatarUrlUploadResponse(avatarUrl, "Profile pic update!"));
         } catch (Exception e) {
