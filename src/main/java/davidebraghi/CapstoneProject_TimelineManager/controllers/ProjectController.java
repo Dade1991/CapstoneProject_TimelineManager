@@ -7,10 +7,13 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_Requ
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.RoleChange_DTO_RequestsAndResponses.RoleChangeRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.RoleChange_DTO_RequestsAndResponses.RoleChangeResponse;
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Task_DTO_RequestsAndResponses.TaskResponse;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
+import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
 import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
+import davidebraghi.CapstoneProject_TimelineManager.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +29,8 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private TaskService taskService;
 
     // GET - FIND_ALL_PROJECT_BY_CREATOR_USER/CREATOR - http://localhost:3001/api/projects/creators/{creatorId}
 
@@ -170,5 +175,16 @@ public class ProjectController {
             @AuthenticationPrincipal User currentUser
     ) {
         return projectService.getProjectMembers(projectId);
+    }
+
+    // GET - restituisce tutti i tasks di uno specifico progetto - http://localhost:3001/api/projects/{projectId}/tasks
+
+    @GetMapping("/{projectId}/tasks")
+    @PreAuthorize("@projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    public List<TaskResponse> getAllTasksByProject(@PathVariable Long projectId) {
+        List<Task> tasks = taskService.findTaskByProject(projectId);
+        return tasks.stream()
+                .map(TaskResponse::fromEntity)
+                .toList();
     }
 }
