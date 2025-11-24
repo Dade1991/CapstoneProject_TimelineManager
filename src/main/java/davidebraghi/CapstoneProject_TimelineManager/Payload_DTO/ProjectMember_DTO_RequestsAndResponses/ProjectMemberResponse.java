@@ -10,9 +10,9 @@ public record ProjectMemberResponse(
         String email,
         String avatarUrl,
         RoleNameENUM role,
-        Long taskCount
+        int taskCount
 ) {
-    public static ProjectMemberResponse from(ProjectMember member, Long taskCount) {
+    public static ProjectMemberResponse from(ProjectMember member, int taskCount) {
         return new ProjectMemberResponse(
                 member.getUser().getUserId(),
                 member.getUser().getName() + " " + member.getUser().getSurname(),

@@ -36,7 +36,7 @@ public class ProjectMember {
     private User_Role role;
 
     @Transient
-    private long taskCount;
+    private int taskCount;
 
     @PrePersist
     protected void onCreate() {
@@ -44,6 +44,18 @@ public class ProjectMember {
     }
 
     // Metodi utility
+
+    // getter personalizzato per taskCount (sovrascrive Lombok)
+
+    public int getTaskCount() {
+        return taskCount;
+    }
+
+    // setter personalizzato per taskCount (sovrascrive Lombok)
+
+    public void setTaskCount(int taskCount) {
+        this.taskCount = taskCount;
+    }
 
     public String getFullDescription() {
         return user.getNickname() + " in project " + project.getProjectName() + " role " + role.getRoleName();

@@ -20,15 +20,12 @@ public class User_Role {
     @Setter(AccessLevel.NONE)
     @Column(name = "roleId")
     private Long roleId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "roleName", nullable = false)
     private RoleNameENUM roleName;
 
     // relazioni
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
-    private List<Project_User_Role> projectUserRoles;
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ProjectMember> projectMembers;
@@ -59,6 +56,6 @@ public class User_Role {
     }
 
     public int getAssignmentCount() {
-        return projectUserRoles != null ? projectUserRoles.size() : 0;
+        return projectMembers != null ? projectMembers.size() : 0;
     }
 }

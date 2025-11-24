@@ -43,9 +43,9 @@ public class Project {
     private User creator;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> tasks;
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonIgnore
-    private List<Project_User_Role> projectUserRoles;
+    //    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Project_User_Role> projectUserRoles;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> comments;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -53,6 +53,8 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<ProjectMember> projectMembers;
+    @Transient
+    private int taskCount;
 
     public Project(String projectName,
                    String projectDescription,
@@ -62,15 +64,19 @@ public class Project {
         this.expiryDate = expiryDate;
     }
 
+    // Metodi utility
+
     @PrePersist
     protected void onCreate() {
         creationDate = LocalDateTime.now();
     }
 
-    // Metodi utility
-
     public int getTaskCount() {
-        return tasks != null ? tasks.size() : 0;
+        return taskCount;
+    }
+
+    public void setTaskCount(int taskCount) {
+        this.taskCount = taskCount;
     }
 
     public boolean isCreator(User user) {

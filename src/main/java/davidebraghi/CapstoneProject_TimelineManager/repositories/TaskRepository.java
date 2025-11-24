@@ -103,6 +103,11 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     List<Task> findByProject_ProjectIdAndTaskExpiryDateAfter(Long projectId, LocalDate date);
 
+    // conta task nel database per progetto
+
+    @Query("SELECT COUNT(t) FROM Task t WHERE t.project.projectId = :projectId")
+    Long countTasksByProjectId(@Param("projectId") Long projectId);
+
     // cerca task filtrato per categoria
 
     @Query("SELECT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.taskId = :taskId")

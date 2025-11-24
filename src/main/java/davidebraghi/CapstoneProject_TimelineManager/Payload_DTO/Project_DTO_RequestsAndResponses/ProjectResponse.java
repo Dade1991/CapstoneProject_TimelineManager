@@ -27,7 +27,7 @@ public record ProjectResponse(
                 project.getCreationDate(),
                 project.getExpiryDate(),
                 project.getCreator().getUserId(),
-                project.getProjectUserRoles() != null ? project.getProjectUserRoles().size() : 0,
+                project.getProjectMembers() != null ? project.getProjectMembers().size() : 0,
                 project.getTaskCount(),
                 project.isOverdue()
         );

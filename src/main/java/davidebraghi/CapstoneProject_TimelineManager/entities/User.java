@@ -52,9 +52,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<Task> createdTasks;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonIgnore
-    private List<Project_User_Role> projectRoles;
+    //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+//    @JsonIgnore
+//    private List<Project_User_Role> projectRoles;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
     private List<Task_Assignee> assignedTasks;
@@ -103,14 +103,14 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (projectRoles == null) {
+        if (projectMembers == null || projectMembers.isEmpty()) {
 
             // Ritorna la lista di autorità (ruoli)
 
             return List.of(new SimpleGrantedAuthority("ROLE_USER")); // ruolo base
         }
-        return projectRoles.stream()
-                .map(projectUserRole -> new SimpleGrantedAuthority("ROLE_" + projectUserRole.getRole().getRoleName().name()))
+        return projectMembers.stream()
+                .map(projectMember -> new SimpleGrantedAuthority("ROLE_" + projectMember.getRole().getRoleName().name()))
                 .distinct()
                 .toList();
     }
