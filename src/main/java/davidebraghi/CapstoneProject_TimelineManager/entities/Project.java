@@ -50,6 +50,9 @@ public class Project {
     private List<Comment> comments;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Activity_Log> activities;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ProjectMember> projectMembers;
 
     public Project(String projectName,
                    String projectDescription,

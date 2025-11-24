@@ -40,6 +40,11 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     List<Task> findByProjectIdAndCategoryId(@Param("projectId") Long projectId,
                                             @Param("categoryId") Long categoryId);
 
+    // cerca task per Id progetto e user Id
+
+    @Query("SELECT t FROM Task t JOIN t.assignees a WHERE t.project.projectId = :projectId AND a.user.userId = :userId")
+    List<Task> findTasksByProjectAndUser(@Param("projectId") Long projectId,
+                                         @Param("userId") Long userId);
     // cerca task con paginazione e categoria
 
     Page<Task> findDistinctByCategories_CategoryIdIn(List<Long> categoryIds, Pageable pageable);

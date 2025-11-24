@@ -159,6 +159,12 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
+    // FIND TASK BY PROJECT ID AND USER ID
+
+    public List<Task> findTasksByProjectAndUser(Long projectId, Long userId) {
+        return taskRepository.findTasksByProjectAndUser(projectId, userId);
+    }
+
     // FIND TASK BY PROJECT AND CATEGORY ID
 
     public List<Task> findTaskByProjectCategory(Long projectId, Long categoryId) {

@@ -124,7 +124,7 @@ public class UserController {
 
     @GetMapping("/{userId}/projects")
     public List<ProjectResponse> getProjectsOfUser(@PathVariable Long userId) {
-        List<Project> projects = projectService.findProjectsByUserId(userId);
+        List<Project> projects = projectService.findByCreatorId(userId);
         return projects.stream()
                 .map(ProjectResponse::fromEntity)
                 .toList();

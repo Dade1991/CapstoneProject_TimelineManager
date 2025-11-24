@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,9 @@ public class User_Role {
 
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     private List<Project_User_Role> projectUserRoles;
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnore
+    private List<ProjectMember> projectMembers;
 
     public User_Role(
             RoleNameENUM roleName
