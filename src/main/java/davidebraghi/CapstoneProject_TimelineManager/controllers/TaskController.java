@@ -33,7 +33,7 @@ public class TaskController {
             @PathVariable Long projectId,
             @PathVariable Long categoryId  // **aggiunto categoryId**
     ) {
-        // **Filtro per progetto + categoria**
+
         List<Task> tasks = taskService.findTaskByProjectCategory(projectId, categoryId);
         return tasks.stream()
                 .map(TaskResponse::fromEntity)
@@ -247,6 +247,8 @@ public class TaskController {
     }
 
     // ---------------- VISUALIZZAZIONE GENERALE TASKS ----------------
+
+    // NON USARE quest'endpoint per la board Kanban!!!!!!
 
     // GET - ricerca i tasks per progetto - http://localhost:3001/api/projects/{projectId}/tasks/project/{taskProjectId}
 

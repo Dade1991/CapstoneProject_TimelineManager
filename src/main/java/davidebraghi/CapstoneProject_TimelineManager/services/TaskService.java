@@ -150,9 +150,6 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    // UPDATE
-
-
     // FIND_BY_ID_AND_DELETE
 
     public void deleteTask(Long projectId, Long categoryId, Long taskId) {
@@ -169,7 +166,7 @@ public class TaskService {
     // FIND TASK BY PROJECT AND CATEGORY ID
 
     public List<Task> findTaskByProjectCategory(Long projectId, Long categoryId) {
-        return taskRepository.findByProjectIdAndCategoryId(projectId, categoryId);
+        return taskRepository.findByCategories_CategoryIdOrderByPositionAsc(categoryId);
     }
 
     // COMPLETE TASK

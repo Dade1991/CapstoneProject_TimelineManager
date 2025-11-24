@@ -1,15 +1,18 @@
 package davidebraghi.CapstoneProject_TimelineManager.services;
 
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.ProjectSave_DTO_RequestsAndResponse.ProjectSaveRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectCreateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectUpdateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Category;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
+import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.CategoryRepository;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.ProjectRepository;
+import davidebraghi.CapstoneProject_TimelineManager.repositories.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +36,8 @@ public class ProjectService {
     private CategoryRepository categoryRepository;
     @Autowired
     private ProjectMemberService projectMemberService;
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Autowired
     public ProjectService(ProjectRepository projectRepository,
@@ -65,7 +70,7 @@ public class ProjectService {
         return this.projectRepository.findAll();
     }
 
-    // SAVE
+    // SAVE/CREATE
 
     public Project createProject(ProjectCreateRequest payload,
                                  Long creatorId) {
@@ -178,5 +183,28 @@ public class ProjectService {
 
     public List<Project> findByCreatorId(Long creatorId) {
         return projectRepository.findByCreator_UserId(creatorId);
+    }
+
+//    SAVE WHOLE PROJECT
+
+    public void saveProjectOrder(Long projectId, ProjectSaveRequest saveRequest) {
+
+        // percorre tutte le categorie ricevute
+
+        for (ProjectSaveRequest.CategoryOrder catOrder : saveRequest.categories()) {
+            Category category = categoryRepository.findById(catOrder.categoryId())
+                    .orElseThrow(() -> new NotFoundException("Category not found with id " + catOrder.categoryId()));
+            category.setPosition(catOrder.position());
+            categoryRepository.save(category);
+
+            // percorre tutte le task di questa categoria
+
+            for (ProjectSaveRequest.TaskOrder taskOrder : catOrder.tasks()) {
+                Task task = taskRepository.findById(taskOrder.taskId())
+                        .orElseThrow(() -> new NotFoundException("Task not found with id " + taskOrder.taskId()));
+                task.setPosition(taskOrder.position());
+                taskRepository.save(task);
+            }
+        }
     }
 }

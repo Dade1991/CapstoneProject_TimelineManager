@@ -1,5 +1,6 @@
 package davidebraghi.CapstoneProject_TimelineManager.controllers;
 
+import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.ProjectSave_DTO_RequestsAndResponse.ProjectSaveRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectCreateRequest;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectResponse;
 import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Project_DTO_RequestsAndResponses.ProjectUpdateRequest;
@@ -72,7 +73,7 @@ public class ProjectController {
         return ProjectResponse.fromEntity(project);
     }
 
-    // POST - SAVE - http://localhost:3001/api/projects
+    // POST - CREATE - http://localhost:3001/api/projects
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -121,5 +122,16 @@ public class ProjectController {
             @PathVariable Long projectId
     ) {
         projectService.findProjectByIdAndDelete(projectId);
+    }
+
+//    SAVE - FOR CYCLE INTO TWO ARRAYS - http://localhost:3001/api/projects/{projectId}/save
+
+    @PutMapping("/{projectId}/save")
+    @ResponseStatus(HttpStatus.OK)
+    public void saveProjectOrder(
+            @PathVariable Long projectId,
+            @RequestBody ProjectSaveRequest saveRequest
+    ) {
+        projectService.saveProjectOrder(projectId, saveRequest);
     }
 }
