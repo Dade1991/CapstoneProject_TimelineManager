@@ -109,4 +109,9 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     Optional<Task> findByProject_ProjectIdAndCategoryIdAndTaskId(@Param("projectId") Long projectId,
                                                                  @Param("categoryId") Long categoryId,
                                                                  @Param("taskId") Long taskId);
+
+    // restituisce tutte le task di una categoria ordinate per posizione (orderIndex)
+
+    List<Task> findByCategories_CategoryIdOrderByPositionAsc(Long categoryId);
+
 }

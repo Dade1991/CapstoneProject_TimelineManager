@@ -14,5 +14,6 @@ public record ProjectUpdateRequest(
 
         @Future(message = "Expiry date shall be in future.")
         LocalDate expiryDate
+
 ) {
 }

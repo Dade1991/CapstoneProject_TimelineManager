@@ -24,6 +24,10 @@ public class Category {
     private String categoryName;
     @Column(name = "categoryColor")
     private String categoryColor;
+    @Column(name = "isDefaultInitial", nullable = false)
+    private boolean isDefaultInitial = true;
+    @Column(name = "position", nullable = false)
+    private int position;
 
     // relazioni
 
@@ -34,4 +38,10 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     @JsonBackReference
     private Set<Task> tasks = new HashSet<>();
+
+    // ========= HELPER =========
+
+    public void markAsNoLongerDefault() {
+        this.isDefaultInitial = false;
+    }
 }

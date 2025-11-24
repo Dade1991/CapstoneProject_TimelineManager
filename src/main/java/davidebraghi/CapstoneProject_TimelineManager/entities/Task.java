@@ -41,8 +41,8 @@ public class Task {
     private LocalDate completedAt;
     @Column(name = "expiryDate")
     private LocalDate taskExpiryDate;
-    @Column(name = "task_position")
-    private Integer position;
+    @Column(name = "position", nullable = false)
+    private int position;
 
     // relazioni
 

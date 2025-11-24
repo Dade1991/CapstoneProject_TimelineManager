@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -211,6 +212,12 @@ public class TaskService {
 
     //    ======== METODI UTLITY ========
 
+    // FIND_ALL ordinato per categoria
+
+    public List<Task> findTasksByCategoryOrdered(Long categoryId) {
+        return taskRepository.findByCategories_CategoryIdOrderByPositionAsc(categoryId);
+    }
+
     // FIND_ALL (non-paginato)
 
     public List<Task> findAllTaskByProjectId(Long projectId) {
@@ -344,6 +351,29 @@ public class TaskService {
         return taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
                 .orElseThrow(() -> new NotFoundException(
                         "Task with ID " + taskId + " not found in Project " + projectId));
+    }
+
+    //    aggiorna le posizioni in una lista di categorie (ordine definito dal frontEnd)
+
+    public void updateTaskOrder(Long categoryId, List<Long> orderedTaskIds) {
+        AtomicInteger index = new AtomicInteger(0);
+        orderedTaskIds.forEach(taskId -> {
+            Task task = taskRepository.findById(taskId)
+                    .orElseThrow(() -> new NotFoundException("Task not found with id " + taskId));
+            task.setPosition(index.getAndIncrement());
+            taskRepository.save(task);
+        });
+    }
+
+    //    dopo la cancellazione di una task, riallinea l'array delle task per non avere buchi
+
+    public void realignTaskPositions(Long categoryId) {
+        List<Task> tasks = taskRepository.findByCategories_CategoryIdOrderByPositionAsc(categoryId);
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            task.setPosition(i);
+            taskRepository.save(task);
+        }
     }
 }
 

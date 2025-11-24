@@ -32,4 +32,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // restituisce tutte le categorie di un progetto
 
     Optional<Category> findByCategoryIdAndProject_ProjectId(Long categoryId, Long projectId);
+
+    // restituisce tutte le categorie di un progetto ordinate per posizione (orderIndex)
+
+    List<Category> findByProject_ProjectIdOrderByPositionAsc(Long projectId);
+
 }

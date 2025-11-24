@@ -113,6 +113,7 @@ public class TaskController {
             @PathVariable Long taskId
     ) {
         taskService.deleteTask(projectId, categoryId, taskId);
+        taskService.realignTaskPositions(categoryId);
     }
 
     // PATCH per aggiornare categorie di una determinata task - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/categories

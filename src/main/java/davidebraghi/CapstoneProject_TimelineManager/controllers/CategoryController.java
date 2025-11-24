@@ -24,7 +24,7 @@ public class CategoryController {
     public List<CategoryResponse> getAllCategories(
             @PathVariable Long projectId
     ) {
-        return categoryService.findCategoriesByProjectId(projectId);
+        return categoryService.findCategoriesByProjectIdOrdered(projectId);
     }
 
     // GET - FIND_BY_ID - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}
@@ -72,5 +72,6 @@ public class CategoryController {
             @PathVariable Long categoryId
     ) {
         categoryService.findCategoryByIdAndDelete(projectId, categoryId);
+        categoryService.realignCategoryPositions(projectId);
     }
 }

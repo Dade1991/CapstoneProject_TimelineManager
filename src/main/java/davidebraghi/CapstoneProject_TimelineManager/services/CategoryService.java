@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,11 +32,17 @@ public class CategoryService {
 
         Category foundCategory = findCategoryByIdAndProject(categoryId, projectId);
 
+        boolean dataChanged = false;
+
         if (payload.categoryName() != null && !payload.categoryName().isBlank()) {
             foundCategory.setCategoryName(payload.categoryName());
         }
         if (payload.categoryColor() != null && !payload.categoryColor().isBlank()) {
             foundCategory.setCategoryColor(payload.categoryColor());
+        }
+        if (dataChanged && foundCategory.isDefaultInitial()) {
+            foundCategory.markAsNoLongerDefault();
+            log.info("Category ID {} marked no more as default category.", foundCategory.getCategoryId());
         }
         Category savedCategory = categoryRepository.save(foundCategory);
         return CategoryResponse.fromEntity(savedCategory);
@@ -43,8 +50,15 @@ public class CategoryService {
 
     // FIND_CATEGORIES_BY_PROJECT_ID
 
-    public List<CategoryResponse> findCategoriesByProjectId(Long projectId) {
-        return categoryRepository.findByProject_ProjectId(projectId)
+//    public List<CategoryResponse> findCategoriesByProjectId(Long projectId) {
+//        return categoryRepository.findByProject_ProjectId(projectId)
+//                .stream()
+//                .map(CategoryResponse::fromEntity)
+//                .collect(Collectors.toList());
+//    }
+
+    public List<CategoryResponse> findCategoriesByProjectIdOrdered(Long projectId) {
+        return categoryRepository.findByProject_ProjectIdOrderByPositionAsc(projectId)
                 .stream()
                 .map(CategoryResponse::fromEntity)
                 .collect(Collectors.toList());
@@ -74,6 +88,10 @@ public class CategoryService {
         category.setCategoryName(payload.categoryName());
         category.setCategoryColor(payload.categoryColor() != null ? payload.categoryColor() : "#000000");
         category.setProject(project);
+        category.setDefaultInitial(false);
+
+        int position = categoryRepository.findByProject_ProjectId(project.getProjectId()).size();
+        category.setPosition(position);
 
         Category saved = categoryRepository.save(category);
         return CategoryResponse.fromEntity(saved);
@@ -85,7 +103,7 @@ public class CategoryService {
         return categoryRepository.findByCategoryIdAndProject_ProjectId(categoryId, projectId)
                 .orElseThrow(() -> new NotFoundException("Category with ID " + categoryId + " has not been found in Project " + projectId));
     }
-    
+
     // FIND_BY_ID (CategoryResponse)
 
     public CategoryResponse findCategoryResponseById(Long projectId, Long categoryId) {
@@ -104,10 +122,35 @@ public class CategoryService {
         log.info("Category with ID " + categoryId + " deleted from Project " + projectId);
     }
 
-//    -------- HELPER --------
+    //    -------- HELPER --------
+
+    //    restitusci categoria per Id
 
     private Category findCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category with ID " + categoryId + " has not been found."));
+    }
+
+    //    aggiorna le posizioni in una lista di categorie (ordine definito dal frontEnd)
+
+    public void updateCategoryOrder(Long projectId, List<Long> orderedCategoryIds) {
+        AtomicInteger index = new AtomicInteger(0);
+        orderedCategoryIds.forEach(categoryId -> {
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new NotFoundException("Category not found with id " + categoryId));
+            category.setPosition(index.getAndIncrement());
+            categoryRepository.save(category);
+        });
+    }
+
+    //    dopo la cancellazione di una category, riallinea l'array delle categorie per non avere buchi
+
+    public void realignCategoryPositions(Long projectId) {
+        List<Category> categories = categoryRepository.findByProject_ProjectIdOrderByPositionAsc(projectId);
+        for (int i = 0; i < categories.size(); i++) {
+            Category category = categories.get(i);
+            category.setPosition(i);
+            categoryRepository.save(category);
+        }
     }
 }

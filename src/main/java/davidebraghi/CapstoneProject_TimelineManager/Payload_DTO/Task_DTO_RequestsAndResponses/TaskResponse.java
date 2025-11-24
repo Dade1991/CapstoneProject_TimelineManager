@@ -28,7 +28,7 @@ public record TaskResponse(
         boolean isCompleted,
         boolean isOverdue,
         Set<CategoryResponse> categories,
-        Integer position
+        int position
 ) {
 
     // converte la "taskEntity" in "taskResponse"
