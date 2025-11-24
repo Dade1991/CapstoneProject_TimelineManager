@@ -10,16 +10,16 @@ public record ProjectMemberResponse(
         String email,
         String avatarUrl,
         RoleNameENUM role,
-        long taskCount
+        Long taskCount
 ) {
-    public static ProjectMemberResponse fromEntity(ProjectMember member) {
+    public static ProjectMemberResponse from(ProjectMember member, Long taskCount) {
         return new ProjectMemberResponse(
                 member.getUser().getUserId(),
                 member.getUser().getName() + " " + member.getUser().getSurname(),
                 member.getUser().getEmail(),
                 member.getUser().getAvatarUrl(),
                 member.getRole().getRoleName(),
-                member.getTaskCount()
+                taskCount
         );
     }
 }

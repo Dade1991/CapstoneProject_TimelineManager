@@ -192,6 +192,7 @@ public class ProjectService {
         // percorre tutte le categorie ricevute
 
         for (ProjectSaveRequest.CategoryOrder catOrder : saveRequest.categories()) {
+
             Category category = categoryRepository.findById(catOrder.categoryId())
                     .orElseThrow(() -> new NotFoundException("Category not found with id " + catOrder.categoryId()));
             category.setPosition(catOrder.position());
@@ -204,6 +205,7 @@ public class ProjectService {
                         .orElseThrow(() -> new NotFoundException("Task not found with id " + taskOrder.taskId()));
                 task.setPosition(taskOrder.position());
                 taskRepository.save(task);
+
             }
         }
     }

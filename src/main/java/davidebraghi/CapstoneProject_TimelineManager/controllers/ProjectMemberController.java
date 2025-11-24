@@ -77,7 +77,8 @@ public class ProjectMemberController {
     // GET - cerca tutti gli users di uno specifico progetto [ACCESSIBILE A MEMBRI E CREATOR] - http://localhost:3001/api/projects/{projectId}/members
 
     @GetMapping("/{projectId}/members")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).VIEW)")
+
     public List<ProjectMemberResponse> getProjectMembers(
             @PathVariable Long projectId,
             @AuthenticationPrincipal User currentUser
@@ -88,7 +89,7 @@ public class ProjectMemberController {
     // GET - restituisce tutti i tasks di uno specifico progetto - http://localhost:3001/api/projects/{projectId}/tasks
 
     @GetMapping("/{projectId}/tasks")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).VIEW)")
     public List<TaskResponse> getAllTasksByProject(
             @PathVariable Long projectId
     ) {
@@ -101,6 +102,7 @@ public class ProjectMemberController {
     // GET - restituisce tutti i task per progetto Id e userId
 
     @GetMapping("/{projectId}/tasks/assignee/{userId}")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).VIEW)")
     public List<TaskResponse> getTasksByProjectAndAssignee(
             @PathVariable Long projectId,
             @PathVariable Long userId) {

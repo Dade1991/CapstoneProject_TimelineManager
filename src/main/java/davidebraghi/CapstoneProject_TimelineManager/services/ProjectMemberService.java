@@ -57,7 +57,7 @@ public class ProjectMemberService {
                 .map(member -> {
                     long taskCount = task_assigneeRepository.countByTask_Project_ProjectIdAndUser_UserId(projectId, member.getUser().getUserId());
                     member.setTaskCount(taskCount);
-                    return ProjectMemberResponse.fromEntity(member);
+                    return ProjectMemberResponse.from(member, taskCount);
                 })
                 .collect(Collectors.toList());
     }
