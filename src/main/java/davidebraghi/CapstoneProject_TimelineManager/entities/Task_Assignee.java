@@ -31,12 +31,13 @@ public class Task_Assignee {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    
+    // ======== Metodi utility ========
+
     @PrePersist
     protected void onCreate() {
         creationDate = LocalDate.now();
     }
-
-    // Metodi utility
 
     public String getFullDescription() {
         return user.getNickname() + " assigned to " + task.getTaskTitle();

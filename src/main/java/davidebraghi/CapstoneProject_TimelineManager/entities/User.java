@@ -83,7 +83,8 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    // Metodi utility (No Database)
+
+    // ======== Metodi utility ========
 
     public String getFullName() {
         return name + " " + surname;

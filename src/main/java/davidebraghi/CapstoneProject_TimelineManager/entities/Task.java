@@ -90,6 +90,9 @@ public class Task {
         this.taskExpiryDate = taskExpiryDate;
     }
 
+
+    // ======== Metodi utility ========
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDate.now();
@@ -100,8 +103,6 @@ public class Task {
     protected void onUpdate() {
         updatedAt = LocalDate.now();
     }
-
-    // Metodi utility
 
     public boolean isCompleted() {
         return completedAt != null;

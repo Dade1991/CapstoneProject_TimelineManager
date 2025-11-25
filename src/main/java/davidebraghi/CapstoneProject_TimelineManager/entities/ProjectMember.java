@@ -43,7 +43,8 @@ public class ProjectMember {
         creationDate = LocalDateTime.now();
     }
 
-    // Metodi utility
+
+    // ======== Metodi utility ========
 
     // getter personalizzato per taskCount (sovrascrive Lombok)
 

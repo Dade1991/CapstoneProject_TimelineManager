@@ -35,7 +35,8 @@ public class Task_Status {
         this.orderIndex = orderIndex;
     }
 
-    // metodi utility
+
+    // ======== Metodi utility ========
 
     public String getDisplayName() {
         return statusName.name();

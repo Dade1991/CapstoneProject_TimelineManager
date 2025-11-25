@@ -31,7 +31,7 @@ public class TaskController {
     @GetMapping
     public List<TaskResponse> getAllTasks(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId  // **aggiunto categoryId**
+            @PathVariable Long categoryId
     ) {
 
         List<Task> tasks = taskService.findTaskByProjectCategory(projectId, categoryId);
@@ -45,7 +45,7 @@ public class TaskController {
     @GetMapping("/{taskId}")
     public TaskResponse getTaskById(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // **aggiunto categoryId**
+            @PathVariable Long categoryId,
             @PathVariable Long taskId
     ) {
         Task task = taskService.findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
@@ -58,7 +58,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     public TaskResponse createTask(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // **aggiunto categoryId**
+            @PathVariable Long categoryId,
             @RequestBody @Validated TaskCreateRequest payload,
             BindingResult validationResult,
             @AuthenticationPrincipal User creator
@@ -69,7 +69,8 @@ public class TaskController {
                     .map(fieldError -> fieldError.getDefaultMessage())
                     .toList());
         }
-        // **Assicura che il categoryId nel path sia incluso nei categoryIds per coerenza**
+        // assicura che il categoryId nel path sia incluso nei categoryIds per coerenza
+
         if (payload.categoryIds() == null || !payload.categoryIds().contains(categoryId)) {
             throw new ValidationException(List.of("Category ID in path must be included in categoryIds."));
         }
@@ -83,7 +84,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public TaskResponse updateTask(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // **aggiunto categoryId**
+            @PathVariable Long categoryId,
             @PathVariable Long taskId,
             @RequestBody @Validated TaskUpdateRequest payload,
             BindingResult validationResult,
@@ -109,7 +110,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTask(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // **aggiunto categoryId**
+            @PathVariable Long categoryId,
             @PathVariable Long taskId
     ) {
         taskService.deleteTask(projectId, categoryId, taskId);
@@ -121,9 +122,9 @@ public class TaskController {
     @PatchMapping("/{taskId}/categories")
     public TaskResponse updateTaskCategories(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // mantenuto per coerenza, opzionale qui
+            @PathVariable Long categoryId,
             @PathVariable Long taskId,
-            @RequestBody List<Long> categoryIds  // lista di nuovi categoryId da assegnare alla task
+            @RequestBody List<Long> categoryIds
     ) {
         Task updatedTask = taskService.updateTaskCategories(projectId, taskId, categoryIds);
         return TaskResponse.fromEntity(updatedTask);
@@ -136,7 +137,7 @@ public class TaskController {
     @PostMapping("/{taskId}/complete")
     public TaskResponse completeTask(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // **aggiunto categoryId**
+            @PathVariable Long categoryId,
             @PathVariable Long taskId
     ) {
         Task task = taskService.completeTask(projectId, categoryId, taskId);
@@ -148,7 +149,7 @@ public class TaskController {
     @PostMapping("/{taskId}/reopen")
     public TaskResponse reopenTask(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // **aggiunto categoryId**
+            @PathVariable Long categoryId,
             @PathVariable Long taskId
     ) {
         Task task = taskService.reopenCompletedTask(projectId, categoryId, taskId);
@@ -176,7 +177,7 @@ public class TaskController {
     @PatchMapping("/{taskId}/status/{statusId}")
     public TaskResponse updateTaskStatus(
             @PathVariable Long projectId,
-            @PathVariable Long categoryId,  // **aggiunto categoryId**
+            @PathVariable Long categoryId,
             @PathVariable Long taskId,
             @PathVariable Long statusId
     ) {
@@ -245,6 +246,10 @@ public class TaskController {
 
         return tasksPage.map(TaskResponse::fromEntity);
     }
+
+
+    //    ======= WAITING AREA =======
+
 
     // ---------------- VISUALIZZAZIONE GENERALE TASKS ----------------
 

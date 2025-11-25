@@ -41,23 +41,6 @@ public class ProjectController {
                 .toList();
     }
 
-    // GET - FIND_ALL (paginato) - http://localhost:3001/api/projects
-
-//    @GetMapping
-//    public Page<ProjectResponse> getAllProject(
-//            @RequestParam(defaultValue = "0") int pageNumber,
-//            @RequestParam(defaultValue = "10") int pageSize,
-//            @RequestParam(defaultValue = "projectId") String sortBy) {
-//
-//        Page<Project> projectsPage = projectService.findAllProject(pageNumber, pageSize, sortBy);
-//
-//        List<ProjectResponse> projectsDTO = projectsPage.stream()
-//                .map(ProjectResponse::fromEntity)
-//                .collect(Collectors.toList());
-//
-//        return new PageImpl<>(projectsDTO, projectsPage.getPageable(), projectsPage.getTotalElements());
-//    }
-
     // GET - FIND_ALL (per data di creazione ASC)
 
     @GetMapping
@@ -135,3 +118,24 @@ public class ProjectController {
         projectService.saveProjectOrder(projectId, saveRequest);
     }
 }
+
+
+//    ======= WAITING AREA =======
+
+
+// GET - FIND_ALL (paginato) - http://localhost:3001/api/projects
+
+//    @GetMapping
+//    public Page<ProjectResponse> getAllProject(
+//            @RequestParam(defaultValue = "0") int pageNumber,
+//            @RequestParam(defaultValue = "10") int pageSize,
+//            @RequestParam(defaultValue = "projectId") String sortBy) {
+//
+//        Page<Project> projectsPage = projectService.findAllProject(pageNumber, pageSize, sortBy);
+//
+//        List<ProjectResponse> projectsDTO = projectsPage.stream()
+//                .map(ProjectResponse::fromEntity)
+//                .collect(Collectors.toList());
+//
+//        return new PageImpl<>(projectsDTO, projectsPage.getPageable(), projectsPage.getTotalElements());
+//    }

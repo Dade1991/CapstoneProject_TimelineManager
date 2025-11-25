@@ -36,7 +36,8 @@ public class User_Role {
         this.roleName = roleName;
     }
 
-    // Metodi utility
+
+    // ======== Metodi utility ========
 
     public String getDisplayName() {
         return roleName.name();

@@ -25,21 +25,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JWTFilter jwtFilter) throws Exception {
 
-        // Disabilitare form login (usiamo JWT)
+        // disabilitazione form login
 
         httpSecurity.formLogin(formLogin -> formLogin.disable());
 
-        // Disabilitare CSRF (non necessario per JWT stateless)
+        // disabilitazione CSRF
 
         httpSecurity.csrf(csrf -> csrf.disable());
 
-        // Configurare sessioni STATELESS (JWT non usa sessioni)
+        // configurazione sessioni STATELESS
 
         httpSecurity.sessionManagement(sessions ->
                 sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
-        // Abilitare CORS per collegamento FRONT_END
+        // abilitazione CORS per collegamento FRONT_END
 
         httpSecurity.cors(Customizer.withDefaults());
 
@@ -56,7 +56,7 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-    // Configurazione CORS per comunicazione FRONT_END
+    // configurazione CORS per comunicazione FRONT_END
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

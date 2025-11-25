@@ -8,6 +8,6 @@ public enum TaskStatusENUM {
     PAUSED,
     WAITING_FEEDBACK,
     BLOCKED,
-    COMPLETED,
     CANCELLED,
+    COMPLETED,
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    // Recupera una singola categoria per ID
+    // recupera una singola categoria per ID
 
     Optional<Category> findById(Long categoryId);
 

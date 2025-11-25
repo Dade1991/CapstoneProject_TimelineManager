@@ -55,8 +55,8 @@ public class DataInitializer implements CommandLineRunner {
             task_statusRepository.save(new Task_Status(TaskStatusENUM.PAUSED, 5));
             task_statusRepository.save(new Task_Status(TaskStatusENUM.WAITING_FEEDBACK, 6));
             task_statusRepository.save(new Task_Status(TaskStatusENUM.BLOCKED, 7));
-            task_statusRepository.save(new Task_Status(TaskStatusENUM.COMPLETED, 8));
-            task_statusRepository.save(new Task_Status(TaskStatusENUM.CANCELLED, 9));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.CANCELLED, 8));
+            task_statusRepository.save(new Task_Status(TaskStatusENUM.COMPLETED, 9));
         } else {
             task_statusRepository.count();
         }

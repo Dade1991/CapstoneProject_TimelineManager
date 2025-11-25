@@ -63,8 +63,9 @@ public class Project {
         this.projectDescription = projectDescription;
         this.expiryDate = expiryDate;
     }
+    
 
-    // Metodi utility
+    // ======== Metodi utility ========
 
     @PrePersist
     protected void onCreate() {

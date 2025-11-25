@@ -71,7 +71,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             System.out.println("[JWTFilter] User email found: " + foundUser.getEmail());
 
-            // Creazione dell'authentication token
+            // creazione dell'authentication token
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(foundUser, null, foundUser.getAuthorities());
 
@@ -96,9 +96,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // salvo in una variabile
 
-//        String path = request.getServletPath();
-//        return new AntPathMatcher().match("/api/auth/**", path);
-
         String path = request.getServletPath();
         boolean shouldSkip = new AntPathMatcher().match("/api/auth/**", path);
         System.out.println("[JWTFilter] Path: " + path + " -> Skip: " + shouldSkip);
@@ -106,5 +103,4 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 }
 
-
-// CHECK DI TUTTI SYSTEM.OUT.PRINTLN -------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// USO MASSIVO DI SYSTEM.OUT.PRINTLN --------------------------

@@ -34,12 +34,6 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     List<Task> findByProject_ProjectIdAndStatus_TaskStatusId(Long projectId, Long statusId);
 
-    // cerca task per id, progetto e categoria (modifica aggiunta)
-
-    @Query("SELECT DISTINCT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
-    List<Task> findByProjectIdAndCategoryId(@Param("projectId") Long projectId,
-                                            @Param("categoryId") Long categoryId);
-
     // cerca task per Id progetto e user Id
 
     @Query("SELECT t FROM Task t JOIN t.assignees a WHERE t.project.projectId = :projectId AND a.user.userId = :userId")
@@ -49,9 +43,13 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     Page<Task> findDistinctByCategories_CategoryIdIn(List<Long> categoryIds, Pageable pageable);
 
-    // cerca task per id e progetto (per il servizio) [ORDINE GIUSTO]
+    // cerca task per id e progetto (per il servizio)
 
     Optional<Task> findByProject_ProjectIdAndTaskId(Long projectId, Long taskId);
+
+    // restituisce tutte le task di una categoria ordinate per posizione (orderIndex)
+
+    List<Task> findByCategories_CategoryIdOrderByPositionAsc(Long categoryId);
 
     // conta quanti tasks sono presenti in uno specifico progetto
 
@@ -69,7 +67,29 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     List<Task> findByProject_ProjectIdOrderByPositionAsc(Long projectId);
 
-    //    _______________________________________________________
+    // conta quanti tasks non sono stati completati globalmente
+
+    long countByProject_ProjectIdAndCompletedAtIsNull(Long projectId);
+
+    // conta quanti tasks sono stati completati globalmente
+
+    long countByProject_ProjectIdAndCompletedAtIsNotNull(Long projectId);
+
+    // cerca task scaduti in un progetto (indipendentemente da categoria)
+
+    List<Task> findByProject_ProjectIdAndTaskExpiryDateBefore(Long projectId, LocalDate date);
+
+    // cerca task non scaduti in un progetto
+
+    List<Task> findByProject_ProjectIdAndTaskExpiryDateAfter(Long projectId, LocalDate date);
+
+//    _______________________________________________________
+
+    // cerca task per id, progetto e categoria (modifica aggiunta)
+
+    @Query("SELECT DISTINCT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
+    List<Task> findByProjectIdAndCategoryId(@Param("projectId") Long projectId,
+                                            @Param("categoryId") Long categoryId);
 
     // conta le task non completate di un progetto e categoria specifica
 
@@ -87,22 +107,6 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
     long countByProjectIdAndCategoryId(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
 
-    // conta quanti tasks non sono stati completati globalmente
-
-    long countByProject_ProjectIdAndCompletedAtIsNull(Long projectId);
-
-    // conta quanti tasks sono stati completati globalmente
-
-    long countByProject_ProjectIdAndCompletedAtIsNotNull(Long projectId);
-
-    // cerca task scaduti in un progetto (indipendentemente da categoria)
-
-    List<Task> findByProject_ProjectIdAndTaskExpiryDateBefore(Long projectId, LocalDate date);
-
-    // cerca task non scaduti in un progetto
-
-    List<Task> findByProject_ProjectIdAndTaskExpiryDateAfter(Long projectId, LocalDate date);
-
     // conta task nel database per progetto
 
     @Query("SELECT COUNT(t) FROM Task t WHERE t.project.projectId = :projectId")
@@ -114,9 +118,4 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
     Optional<Task> findByProject_ProjectIdAndCategoryIdAndTaskId(@Param("projectId") Long projectId,
                                                                  @Param("categoryId") Long categoryId,
                                                                  @Param("taskId") Long taskId);
-
-    // restituisce tutte le task di una categoria ordinate per posizione (orderIndex)
-
-    List<Task> findByCategories_CategoryIdOrderByPositionAsc(Long categoryId);
-
 }

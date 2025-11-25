@@ -15,7 +15,7 @@ public class JWTTools {
     @Value("${jwt.secret}")
     private String keySecret;
 
-    // Creazione token
+    // creazione token
 
     public String generateTokenFromUser(User user) {
         List<String> roles = user.getAuthorities().stream()
@@ -31,7 +31,7 @@ public class JWTTools {
                 compact();
     }
 
-    // Validità token
+    // validità token
 
     public void verifyToken(String accessToken) {
         Jwts.parser().
@@ -40,7 +40,7 @@ public class JWTTools {
                 parse(accessToken);
     }
 
-    // Estrazione dell'ID dal token
+    // estrazione dell'ID dal token
 
     public Long extractIdFromToken(String accessToken) {
         return Long.parseLong(Jwts.parser().

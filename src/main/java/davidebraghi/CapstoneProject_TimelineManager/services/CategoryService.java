@@ -48,15 +48,6 @@ public class CategoryService {
         return CategoryResponse.fromEntity(savedCategory);
     }
 
-    // FIND_CATEGORIES_BY_PROJECT_ID
-
-//    public List<CategoryResponse> findCategoriesByProjectId(Long projectId) {
-//        return categoryRepository.findByProject_ProjectId(projectId)
-//                .stream()
-//                .map(CategoryResponse::fromEntity)
-//                .collect(Collectors.toList());
-//    }
-
     public List<CategoryResponse> findCategoriesByProjectIdOrdered(Long projectId) {
         return categoryRepository.findByProject_ProjectIdOrderByPositionAsc(projectId)
                 .stream()

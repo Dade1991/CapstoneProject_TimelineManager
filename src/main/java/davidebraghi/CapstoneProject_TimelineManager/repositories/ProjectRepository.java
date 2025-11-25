@@ -12,7 +12,9 @@ import java.util.List;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    Page<Project> findByProjectNameContainingIgnoreCase(String projectName, Pageable pageable);
+    // metodo per recuperare tutti i progetti ordinati per creationDate ascendente
+
+    List<Project> findAllByOrderByCreationDateAsc();
 
     // cerca i progetti per uno specifico creatore(user)
 
@@ -20,16 +22,15 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     // cerca i progetti per una specifico parola(ignorando maiusc/minusc)
 
+    Page<Project> findByProjectNameContainingIgnoreCase(String projectName, Pageable pageable);
+
+
     List<Project> findByProjectNameContainingIgnoreCase(String projectName);
-
-    // metodo per recuperare tutti i progetti ordinati per creationDate ascendente
-
-    List<Project> findAllByOrderByCreationDateAsc();
 
     // metodo paginato con ordinamento per creationDate ascendente
 
     Page<Project> findAllByOrderByCreationDateAsc(Pageable pageable);
-    
+
     // cerca i progetti che scadono prima di una specifica data;
 
     List<Project> findByExpiryDateBefore(LocalDate expiryDate);
