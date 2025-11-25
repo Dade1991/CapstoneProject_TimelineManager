@@ -11,6 +11,7 @@ import davidebraghi.CapstoneProject_TimelineManager.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -56,6 +57,7 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public TaskResponse createTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -82,6 +84,7 @@ public class TaskController {
 
     @PutMapping("/{taskId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public TaskResponse updateTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -108,6 +111,7 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public void deleteTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -120,6 +124,7 @@ public class TaskController {
     // PATCH per aggiornare categorie di una determinata task - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/categories
 
     @PatchMapping("/{taskId}/categories")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public TaskResponse updateTaskCategories(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -135,6 +140,7 @@ public class TaskController {
     // POST - COMPLETE TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/complete
 
     @PostMapping("/{taskId}/complete")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public TaskResponse completeTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -147,6 +153,7 @@ public class TaskController {
     // PUT - REOPEN COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/reopen
 
     @PostMapping("/{taskId}/reopen")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public TaskResponse reopenTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -175,6 +182,7 @@ public class TaskController {
     // PATCH - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status/{statusId}
 
     @PatchMapping("/{taskId}/status/{statusId}")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public TaskResponse updateTaskStatus(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,

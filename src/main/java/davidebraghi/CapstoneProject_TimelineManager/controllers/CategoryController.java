@@ -6,6 +6,7 @@ import davidebraghi.CapstoneProject_TimelineManager.Payload_DTO.Category_DTO_Req
 import davidebraghi.CapstoneProject_TimelineManager.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public CategoryResponse createCategory(
             @PathVariable Long projectId,
             @RequestBody @Validated CategoryCreateRequest payload
@@ -55,6 +57,7 @@ public class CategoryController {
 
     @PutMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public CategoryResponse getCategoryByIdAndUpdate(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -67,6 +70,7 @@ public class CategoryController {
 
     @DeleteMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public void deleteCategory(
             @PathVariable Long projectId,
             @PathVariable Long categoryId
