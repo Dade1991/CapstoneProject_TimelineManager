@@ -8,6 +8,7 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.Category;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
+import davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM;
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.CategoryRepository;
@@ -54,6 +55,10 @@ public class ProjectService {
         return projectMemberService.isUserCreator(projectId, userId);
     }
 
+    public boolean hasPermission(Long projectId, Long userId, ProjectPermissionENUM permission) {
+        return projectMemberService.hasPermission(projectId, userId, permission);
+    }
+
     // FIND_ALL (paginato)
 
     public Page<Project> findAllProject(int pageNumber,
@@ -68,6 +73,12 @@ public class ProjectService {
 
     public List<Project> findAllProjectWithNoPagination() {
         return this.projectRepository.findAll();
+    }
+
+    // FIND_ALL_PROJECT_IF_MEMBER (projectService)
+
+    public List<Project> findAccessibleProjectsByUser(Long userId) {
+        return projectRepository.findProjectsAccessibleByUserOrderByCreationDateAsc(userId);
     }
 
     // SAVE/CREATE

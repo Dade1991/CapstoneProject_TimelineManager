@@ -4,6 +4,8 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -19,6 +21,16 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     // cerca i progetti per uno specifico creatore(user)
 
     List<Project> findByCreator_UserId(Long userId);
+
+    // prende tutti i progetti, associa i membri ai progetti (LEFT JOIN) e restituisce tutti i membri ai relativi progetti (projectRepository)
+
+    @Query("""
+              SELECT DISTINCT p FROM Project p
+              LEFT JOIN p.projectMembers pm
+              WHERE p.creator.userId = :userId OR pm.user.userId = :userId
+              ORDER BY p.creationDate ASC
+            """)
+    List<Project> findProjectsAccessibleByUserOrderByCreationDateAsc(@Param("userId") Long userId);
 
     // cerca i progetti per una specifico parola(ignorando maiusc/minusc)
 
