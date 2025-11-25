@@ -13,8 +13,7 @@ public record TaskCreateRequest(
         @NotBlank(message = "Task title is mandatory.")
         @Size(min = 3, max = 100, message = "Task title should have 3 to 100 characters.")
         String taskTitle,
-
-        @Size(max = 500, message = "Description should have max 500 characters.")
+        
         String taskDescription,
 
         @NotNull(message = "Priority is mandatory.")

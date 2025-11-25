@@ -10,8 +10,7 @@ import java.util.Set;
 public record TaskUpdateRequest(
         @Size(min = 3, max = 100, message = "Task title Update Ta 3 to 100 characters.")
         String taskTitle,
-
-        @Size(max = 500, message = "Description should have max 500 characters.")
+        
         String taskDescription,
 
         TaskPriorityENUM taskPriority,
