@@ -50,9 +50,9 @@ public class ProjectService {
         this.projectMemberService = projectMemberService;
     }
 
-//    public boolean isUserCreator(Long projectId, Long userId) {
-//        return projectMemberService.isUserCreator(projectId, userId);
-//    }
+    public boolean isUserCreator(Long projectId, Long userId) {
+        return projectMemberService.isUserCreator(projectId, userId);
+    }
 
     // FIND_ALL (paginato)
 
