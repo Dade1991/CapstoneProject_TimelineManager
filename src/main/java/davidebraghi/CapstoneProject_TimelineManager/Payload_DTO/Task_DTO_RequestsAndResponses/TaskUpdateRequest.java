@@ -22,6 +22,10 @@ public record TaskUpdateRequest(
 
         Set<Long> categoryIds,
 
-        Integer position
+        Integer position,
+
+        Boolean isCompleted,
+
+        LocalDate completedAt
 ) {
 }

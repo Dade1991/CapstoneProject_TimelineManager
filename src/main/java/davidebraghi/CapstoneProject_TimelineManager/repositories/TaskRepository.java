@@ -51,6 +51,13 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     List<Task> findByCategories_CategoryIdOrderByPositionAsc(Long categoryId);
 
+    // restituisce tutte le task completate in un progetto
+
+    List<Task> findByProject_ProjectIdAndIsCompletedTrue(Long projectId);
+
+    // restituisce tutte le task non completate in un progetto
+
+    List<Task> findByProject_ProjectIdAndIsCompletedFalse(Long projectId);
     // conta quanti tasks sono presenti in uno specifico progetto
 
     long countByProject_ProjectId(Long projectId);

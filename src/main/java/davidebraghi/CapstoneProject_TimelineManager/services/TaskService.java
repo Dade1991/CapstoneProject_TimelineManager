@@ -79,7 +79,7 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    // FIND TASK BY PROJECT, CATEGORY & TASK ID
+//     FIND TASK BY PROJECT, CATEGORY & TASK ID
 
     public Task findTaskByProjectCategoryAndTaskId(Long projectId, Long categoryId, Long taskId) {
         Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
@@ -97,9 +97,32 @@ public class TaskService {
         return task;
     }
 
+//    public Task findTaskByProjectCategoryAndTaskId(Long projectId, Long categoryId, Long taskId) {
+//        log.debug("Chiamato findTaskByProjectCategoryAndTaskId con projectId={}, categoryId={}, taskId={}", projectId, categoryId, taskId);
+//
+//        Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
+//                .orElseThrow(() -> new NotFoundException(
+//                        "Task with ID " + taskId + " has not been found in Project " + projectId));
+//
+//        List<Long> categoryIds = task.getCategories().stream()
+//                .map(Category::getCategoryId)
+//                .toList();
+//        log.debug("Categorie associate al task {}: {}", taskId, categoryIds);
+//
+//        boolean inCategory = categoryIds.contains(categoryId);
+//        log.debug("Il task appartiene alla categoria? {}", inCategory);
+//
+//        if (!inCategory) {
+//            throw new BadRequestException(
+//                    "Task with ID " + taskId + " does not belong to Category " + categoryId);
+//        }
+//
+//        return task;
+//    }
+
     // UPDATE TASK CATEGORY
 
-    public Task updateTaskCategories(Long projectId, Long taskId, List<Long> categoryIds) {
+    public Task updateTaskCategories(Long projectId, List<Long> categoryIds, Long taskId) {
         // Recupera la task in base a projectId e taskId
         Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
                 .orElseThrow(() -> new NotFoundException("Task not found for project " + projectId + " and task " + taskId));
@@ -171,23 +194,37 @@ public class TaskService {
 
     // COMPLETE TASK
 
-    public Task completeTask(Long projectId, Long categoryId, Long taskId) {
-        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+//    public Task completeTask(Long projectId, Long categoryId, Long taskId) {
+//        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+//        if (task.isCompleted()) {
+//            throw new BadRequestException("Task already completed.");
+//        }
+//        task.setCompletedAt(LocalDate.now());
+//        task.setIsCompleted(true);
+//        return taskRepository.save(task);
+//    }
+//
+    // COMPLETE TASK
+
+    public Task completeTask(Long projectId, Long taskId) {
+        Task task = findTaskByProjectIdAndTaskId(projectId, taskId);
         if (task.isCompleted()) {
             throw new BadRequestException("Task already completed.");
         }
         task.setCompletedAt(LocalDate.now());
+        task.setIsCompleted(true);
         return taskRepository.save(task);
     }
 
     // REOPEN COMPLETED TASK
 
-    public Task reopenCompletedTask(Long projectId, Long categoryId, Long taskId) {
-        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
+    public Task reopenCompletedTask(Long projectId, Long taskId) {
+        Task task = findTaskByProjectIdAndTaskId(projectId, taskId);
         if (!task.isCompleted()) {
             throw new BadRequestException("Task is not completed.");
         }
         task.setCompletedAt(null);
+        task.setIsCompleted(false);
         return taskRepository.save(task);
     }
 

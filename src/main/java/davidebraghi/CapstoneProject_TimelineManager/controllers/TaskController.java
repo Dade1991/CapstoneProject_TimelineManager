@@ -131,66 +131,8 @@ public class TaskController {
             @PathVariable Long taskId,
             @RequestBody List<Long> categoryIds
     ) {
-        Task updatedTask = taskService.updateTaskCategories(projectId, taskId, categoryIds);
+        Task updatedTask = taskService.updateTaskCategories(projectId, categoryIds, taskId);
         return TaskResponse.fromEntity(updatedTask);
-    }
-
-    // ---------------- COMPLETA/RIAPRI TASK ----------------
-
-    // POST - COMPLETE TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/complete
-
-    @PostMapping("/{taskId}/complete")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
-    public TaskResponse completeTask(
-            @PathVariable Long projectId,
-            @PathVariable Long categoryId,
-            @PathVariable Long taskId
-    ) {
-        Task task = taskService.completeTask(projectId, categoryId, taskId);
-        return TaskResponse.fromEntity(task);
-    }
-
-    // PUT - REOPEN COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/reopen
-
-    @PostMapping("/{taskId}/reopen")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
-    public TaskResponse reopenTask(
-            @PathVariable Long projectId,
-            @PathVariable Long categoryId,
-            @PathVariable Long taskId
-    ) {
-        Task task = taskService.reopenCompletedTask(projectId, categoryId, taskId);
-        return TaskResponse.fromEntity(task);
-    }
-
-    // ---------------- CAMBIO STATUS TASK DEDICATO ----------------
-
-    // PUT - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status
-
-//    @PutMapping("/{taskId}/status")
-//    @ResponseStatus(HttpStatus.ACCEPTED)
-//    public TaskResponse findTaskByIdAndUpdateTaskStatus(
-//            @PathVariable Long projectId,
-//            @PathVariable Long taskId,
-//            @RequestBody Map<String, Long> statusPayload
-//    ) {
-//        Long newStatusId = statusPayload.get("statusId");
-//        Task updatedTask = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, newStatusId);
-//        return TaskResponse.fromEntity(updatedTask);
-//    }
-
-    // PATCH - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status/{statusId}
-
-    @PatchMapping("/{taskId}/status/{statusId}")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
-    public TaskResponse updateTaskStatus(
-            @PathVariable Long projectId,
-            @PathVariable Long categoryId,
-            @PathVariable Long taskId,
-            @PathVariable Long statusId
-    ) {
-        Task task = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, statusId);
-        return TaskResponse.fromEntity(task);
     }
 
     // ---------------- FILTRI CUSTOM PER TASK ----------------

@@ -37,6 +37,8 @@ public class Task {
     @Setter(AccessLevel.NONE)
     @Column(name = "updatedAt", nullable = false)
     private LocalDate updatedAt;
+    @Column(name = "is_completed")
+    private Boolean isCompleted;
     @Column(name = "completedAt")
     private LocalDate completedAt;
     @Column(name = "expiryDate")
@@ -73,9 +75,9 @@ public class Task {
     private List<Activity_Log> activities;
     @ManyToMany
     @JoinTable(
-            name = "categories",
+            name = "task_categories",
             joinColumns = @JoinColumn(name = "task_id"),
-            inverseJoinColumns = @JoinColumn(name = "categoryId")
+            inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     @JsonManagedReference
     private Set<Category> categories = new HashSet<>();

@@ -15,10 +15,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findById(Long categoryId);
 
-    // cerca una determinata Category per nome
-
-    Optional<Category> findByCategoryNameIgnoreCase(String categoryName);
-
     // verifica l'esistenza di una determinata Category (due per due casi differenti)
 
     boolean existsByProjectAndCategoryNameIgnoreCase(Project project, String categoryName);
@@ -36,5 +32,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // restituisce tutte le categorie di un progetto ordinate per posizione (orderIndex)
 
     List<Category> findByProject_ProjectIdOrderByPositionAsc(Long projectId);
+
+    // cerca una determinata Category per nome
+
+    Optional<Category> findByCategoryNameIgnoreCase(String categoryName);
 
 }

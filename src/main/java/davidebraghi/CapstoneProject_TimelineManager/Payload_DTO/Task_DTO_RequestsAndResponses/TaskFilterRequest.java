@@ -27,7 +27,6 @@ public record TaskFilterRequest(
         // FILTRI booleani
 
         Boolean isCompleted,
-        Boolean isExpired,
 
         // FILTRI per data specifica
 

@@ -10,6 +10,7 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM;
 import davidebraghi.CapstoneProject_TimelineManager.enums.RoleNameENUM;
+import davidebraghi.CapstoneProject_TimelineManager.exceptions.BadRequestException;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.NotFoundException;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.CategoryRepository;
 import davidebraghi.CapstoneProject_TimelineManager.repositories.ProjectRepository;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -211,6 +213,29 @@ public class ProjectService {
 
 //    SAVE WHOLE PROJECT
 
+//    public void saveProjectOrder(Long projectId, ProjectSaveRequest saveRequest) {
+//
+//        // percorre tutte le categorie ricevute
+//
+//        for (ProjectSaveRequest.CategoryOrder catOrder : saveRequest.categories()) {
+//
+//            Category category = categoryRepository.findById(catOrder.categoryId())
+//                    .orElseThrow(() -> new NotFoundException("Category not found with id " + catOrder.categoryId()));
+//            category.setPosition(catOrder.position());
+//            categoryRepository.save(category);
+//
+//            // percorre tutte le task di questa categoria
+//
+//            for (ProjectSaveRequest.TaskOrder taskOrder : catOrder.tasks()) {
+//                Task task = taskRepository.findById(taskOrder.taskId())
+//                        .orElseThrow(() -> new NotFoundException("Task not found with id " + taskOrder.taskId()));
+//                task.setPosition(taskOrder.position());
+//                taskRepository.save(task);
+//
+//            }
+//        }
+//    }
+
     public void saveProjectOrder(Long projectId, ProjectSaveRequest saveRequest) {
 
         // percorre tutte le categorie ricevute
@@ -228,8 +253,27 @@ public class ProjectService {
                 Task task = taskRepository.findById(taskOrder.taskId())
                         .orElseThrow(() -> new NotFoundException("Task not found with id " + taskOrder.taskId()));
                 task.setPosition(taskOrder.position());
-                taskRepository.save(task);
 
+
+                if (!task.getProject().getProjectId().equals(projectId)) {
+                    throw new BadRequestException("Task " + taskOrder.taskId() + " does not belong to project " + projectId);
+                }
+
+                task.setPosition(taskOrder.position());
+
+                // aggiorna associazione categoria solo se il task non ha già questa categoria
+
+                boolean hasCategory = task.getCategories()
+                        .stream()
+                        .anyMatch(cat -> cat.getCategoryId().equals(catOrder.categoryId()));
+                if (!hasCategory) {
+
+                    // aggiorna categorie
+
+                    task.setCategories(Set.of(category));
+                }
+
+                taskRepository.save(task);
             }
         }
     }
