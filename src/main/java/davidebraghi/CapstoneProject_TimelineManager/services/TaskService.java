@@ -170,6 +170,36 @@ public class TaskService {
             task.setPosition(payload.position());
         }
 
+        // gestione di isCompleted e completedAt per update status
+
+        Boolean isCompletedPayload = payload.isCompleted();
+        LocalDate completedAtPayload = payload.completedAt();
+
+        if (isCompletedPayload != null) {
+            task.setIsCompleted(isCompletedPayload);
+            if (isCompletedPayload) {
+
+                // se completata e completedAt non valorizzata, imposta a oggi
+
+                if (completedAtPayload == null) {
+                    task.setCompletedAt(LocalDate.now());
+                } else {
+                    task.setCompletedAt(completedAtPayload);
+                }
+            } else {
+
+                // se non completata, azzera completedAt
+
+                task.setCompletedAt(null);
+            }
+        } else if (completedAtPayload != null) {
+
+            // se isCompleted non è presente, ma è presente completedAt, aggiorna isCompleted
+
+            task.setCompletedAt(completedAtPayload);
+            task.setIsCompleted(true);
+        }
+
         return taskRepository.save(task);
     }
 
