@@ -77,8 +77,21 @@ public class ProjectService {
 
     // FIND_ALL_PROJECT_IF_MEMBER (projectService)
 
+//    public List<Project> findAccessibleProjectsByUser(Long userId) {
+//        return projectRepository.findProjectsAccessibleByUserOrderByCreationDateAsc(userId);
+//    }
+
     public List<Project> findAccessibleProjectsByUser(Long userId) {
-        return projectRepository.findProjectsAccessibleByUserOrderByCreationDateAsc(userId);
+        List<Project> projects = projectRepository.findProjectsAccessibleByUserOrderByCreationDateAsc(userId);
+        for (Project project : projects) {
+            // Forza caricamento tasks e imposta taskCount
+            if (project.getTasks() != null) {
+                project.setTaskCount(project.getTasks().size());
+            } else {
+                project.setTaskCount(0);
+            }
+        }
+        return projects;
     }
 
     // SAVE/CREATE

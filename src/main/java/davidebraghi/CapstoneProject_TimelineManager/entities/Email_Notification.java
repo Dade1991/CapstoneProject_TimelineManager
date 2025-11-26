@@ -30,8 +30,8 @@ public class Email_Notification {
     private String emailSubject;
     @Column(name = "email_body", columnDefinition = "TEXT")
     private String emailBody;
-    @Column(name = "sendDate", nullable = false)
-    private LocalDateTime sendDate;
+    //    @Column(name = "sendDate", nullable = false)
+//    private LocalDateTime sendDate;
     @Column(name = "sentAt")
     private LocalDateTime sentAt;
     @Column(name = "errorMessage")
@@ -42,14 +42,14 @@ public class Email_Notification {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
-
-    @PrePersist
-    protected void onCreate() {
-        sendDate = LocalDateTime.now();
-        if (notificationStatus == null) {
-            notificationStatus = EmailNotificationStatusENUM.PENDING;
-        }
-    }
+//
+//    @PrePersist
+//    protected void onCreate() {
+//        sendDate = LocalDateTime.now();
+//        if (notificationStatus == null) {
+//            notificationStatus = EmailNotificationStatusENUM.PENDING;
+//        }
+//    }
 
     // logica invio email
 

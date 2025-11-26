@@ -41,7 +41,7 @@ public class UserController {
         return usersPage.map(UserResponse::fromEntity);
     }
 
-    // GET - FIND_BY_ID (profilo user loggato) - http://localhost:3001/api/users/me
+    // GET - FIND_BY_ID (profilo user loggato) - http://localhost:3001/api/users/profile
 
     @GetMapping("/profile")
     public UserResponse getPersonalProfile(@AuthenticationPrincipal User user) {

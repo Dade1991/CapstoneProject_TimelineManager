@@ -32,6 +32,9 @@ public class Project {
     private LocalDateTime creationDate;
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
+    @Column(name = "task_count")
+    @Transient
+    private int taskCount;
 
     // relazioni
 
@@ -50,11 +53,10 @@ public class Project {
     private List<Comment> comments;
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Activity_Log> activities;
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonIgnore
     private List<ProjectMember> projectMembers;
-    @Transient
-    private int taskCount;
+
 
     public Project(String projectName,
                    String projectDescription,
@@ -63,7 +65,7 @@ public class Project {
         this.projectDescription = projectDescription;
         this.expiryDate = expiryDate;
     }
-    
+
 
     // ======== Metodi utility ========
 
@@ -72,16 +74,16 @@ public class Project {
         creationDate = LocalDateTime.now();
     }
 
+    public boolean isCreator(User user) {
+        return creator.getUserId().equals(user.getUserId());
+    }
+
     public int getTaskCount() {
         return taskCount;
     }
 
     public void setTaskCount(int taskCount) {
         this.taskCount = taskCount;
-    }
-
-    public boolean isCreator(User user) {
-        return creator.getUserId().equals(user.getUserId());
     }
 
     public boolean isOverdue() {
