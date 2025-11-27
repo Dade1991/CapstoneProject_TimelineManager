@@ -94,35 +94,35 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     // cerca task per id, progetto e categoria (modifica aggiunta)
 
-    @Query("SELECT DISTINCT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
-    List<Task> findByProjectIdAndCategoryId(@Param("projectId") Long projectId,
-                                            @Param("categoryId") Long categoryId);
-
-    // conta le task non completate di un progetto e categoria specifica
-
-    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.completedAt IS NULL")
-    long countByProjectIdAndCategoryIdAndCompletedAtIsNull(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
-
-    // conta le task completate di un progetto e categoria specifica
-
-    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE " +
-            "t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.completedAt IS NOT NULL")
-    long countByProjectIdAndCategoryIdAndCompletedAtIsNotNull(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
-
-    // conta tutte le task di un progetto e categoria specifica
-
-    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
-    long countByProjectIdAndCategoryId(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
-
-    // conta task nel database per progetto
-
-    @Query("SELECT COUNT(t) FROM Task t WHERE t.project.projectId = :projectId")
-    Long countTasksByProjectId(@Param("projectId") Long projectId);
-
-    // cerca task filtrato per categoria
-
-    @Query("SELECT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.taskId = :taskId")
-    Optional<Task> findByProject_ProjectIdAndCategoryIdAndTaskId(@Param("projectId") Long projectId,
-                                                                 @Param("categoryId") Long categoryId,
-                                                                 @Param("taskId") Long taskId);
+//    @Query("SELECT DISTINCT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
+//    List<Task> findByProjectIdAndCategoryId(@Param("projectId") Long projectId,
+//                                            @Param("categoryId") Long categoryId);
+//
+//    // conta le task non completate di un progetto e categoria specifica
+//
+//    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.completedAt IS NULL")
+//    long countByProjectIdAndCategoryIdAndCompletedAtIsNull(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
+//
+//    // conta le task completate di un progetto e categoria specifica
+//
+//    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE " +
+//            "t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.completedAt IS NOT NULL")
+//    long countByProjectIdAndCategoryIdAndCompletedAtIsNotNull(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
+//
+//    // conta tutte le task di un progetto e categoria specifica
+//
+//    @Query("SELECT COUNT(t) FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId")
+//    long countByProjectIdAndCategoryId(@Param("projectId") Long projectId, @Param("categoryId") Long categoryId);
+//
+//    // conta task nel database per progetto
+//
+//    @Query("SELECT COUNT(t) FROM Task t WHERE t.project.projectId = :projectId")
+//    Long countTasksByProjectId(@Param("projectId") Long projectId);
+//
+//    // cerca task filtrato per categoria
+//
+//    @Query("SELECT t FROM Task t JOIN t.categories c WHERE t.project.projectId = :projectId AND c.categoryId = :categoryId AND t.taskId = :taskId")
+//    Optional<Task> findByProject_ProjectIdAndCategoryIdAndTaskId(@Param("projectId") Long projectId,
+//                                                                 @Param("categoryId") Long categoryId,
+//                                                                 @Param("taskId") Long taskId);
 }

@@ -43,21 +43,6 @@ public class TaskStatusController {
 
     // ---------------- CAMBIO STATUS TASK DEDICATO ----------------
 
-    // PATCH - REOPEN COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/statusUpdate
-
-
-//    @PutMapping("/{taskId}/status")
-//    @ResponseStatus(HttpStatus.ACCEPTED)
-//    public TaskResponse findTaskByIdAndUpdateTaskStatus(
-//            @PathVariable Long projectId,
-//            @PathVariable Long taskId,
-//            @RequestBody Map<String, Long> statusPayload
-//    ) {
-//        Long newStatusId = statusPayload.get("statusId");
-//        Task updatedTask = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, newStatusId);
-//        return TaskResponse.fromEntity(updatedTask);
-//    }
-
     // PATCH - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status/{statusId}
 
     @PatchMapping("/statusUpdate/{statusId}")

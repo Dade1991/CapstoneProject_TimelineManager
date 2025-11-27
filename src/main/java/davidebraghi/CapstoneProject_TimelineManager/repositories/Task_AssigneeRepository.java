@@ -12,14 +12,15 @@ import java.util.Optional;
 @Repository
 public interface Task_AssigneeRepository extends JpaRepository<Task_Assignee, Long> {
 
+    // conta quanti task sono assegnati per progetto ad uno specifico user
+
+    int countByTask_Project_ProjectIdAndUser_UserId(Long projectId, Long userId);
+    
     // verifica se uno specifico user è assegnato ad uno specifico task
 
     Optional<Task_Assignee> findByTask_TaskIdAndUser_UserId(Long taskId,
                                                             Long userId);
 
-    // conta quanti task sono assegnati per progetto ad uno specifico user
-
-    int countByTask_Project_ProjectIdAndUser_UserId(Long projectId, Long userId);
 
     // cerca tutti i tasks assegnati ad uno specifico user
 
