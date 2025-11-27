@@ -115,7 +115,7 @@ public class ProjectService {
         Category defaultCategory = new Category();
         defaultCategory.setProject(project);
         defaultCategory.setCategoryName("Default");
-        defaultCategory.setCategoryColor("#000000");
+        defaultCategory.setCategoryColor("#FFC733");
         categoryRepository.save(defaultCategory);
     }
 

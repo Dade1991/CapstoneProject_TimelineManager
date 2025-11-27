@@ -77,7 +77,7 @@ public class CategoryService {
 
         Category category = new Category();
         category.setCategoryName(payload.categoryName());
-        category.setCategoryColor(payload.categoryColor() != null ? payload.categoryColor() : "#000000");
+        category.setCategoryColor(payload.categoryColor() != null ? payload.categoryColor() : "#FFC733");
         category.setProject(project);
         category.setDefaultInitial(false);
 

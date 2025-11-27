@@ -127,75 +127,17 @@ public class TaskController {
 
     // PATCH per aggiornare categorie di una determinata task - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/categories
 
-    @PatchMapping("/{taskId}/categories")
-    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
-    public TaskResponse updateTaskCategories(
-            @PathVariable Long projectId,
-            @PathVariable Long categoryId,
-            @PathVariable Long taskId,
-            @RequestBody List<Long> categoryIds
-    ) {
-        Task updatedTask = taskService.updateTaskCategories(projectId, taskId, categoryIds);
-        return TaskResponse.fromEntity(updatedTask);
-    }
-
-    // ---------------- COMPLETA/RIAPRI TASK ----------------
-
-    // POST - COMPLETE TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/complete
-
-    @PostMapping("/{taskId}/complete")
-    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
-    public TaskResponse completeTask(
-            @PathVariable Long projectId,
-            @PathVariable Long categoryId,
-            @PathVariable Long taskId
-    ) {
-        Task task = taskService.completeTask(projectId, categoryId, taskId);
-        return TaskResponse.fromEntity(task);
-    }
-
-    // PUT - REOPEN COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/reopen
-
-    @PostMapping("/{taskId}/reopen")
-    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
-    public TaskResponse reopenTask(
-            @PathVariable Long projectId,
-            @PathVariable Long categoryId,
-            @PathVariable Long taskId
-    ) {
-        Task task = taskService.reopenCompletedTask(projectId, categoryId, taskId);
-        return TaskResponse.fromEntity(task);
-    }
-
-    // ---------------- CAMBIO STATUS TASK DEDICATO ----------------
-
-    // PUT - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status
-
-//    @PutMapping("/{taskId}/status")
-//    @ResponseStatus(HttpStatus.ACCEPTED)
-//    public TaskResponse findTaskByIdAndUpdateTaskStatus(
+//    @PatchMapping("/{taskId}/categories")
+//    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
+//    public TaskResponse updateTaskCategories(
 //            @PathVariable Long projectId,
+//            @PathVariable Long categoryId,
 //            @PathVariable Long taskId,
-//            @RequestBody Map<String, Long> statusPayload
+//            @RequestBody List<Long> categoryIds
 //    ) {
-//        Long newStatusId = statusPayload.get("statusId");
-//        Task updatedTask = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, newStatusId);
+//        Task updatedTask = taskService.updateTaskCategories(projectId, taskId, categoryIds);
 //        return TaskResponse.fromEntity(updatedTask);
 //    }
-
-    // PATCH - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status/{statusId}
-
-    @PatchMapping("/{taskId}/status/{statusId}")
-    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
-    public TaskResponse updateTaskStatus(
-            @PathVariable Long projectId,
-            @PathVariable Long categoryId,
-            @PathVariable Long taskId,
-            @PathVariable Long statusId
-    ) {
-        Task task = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, statusId);
-        return TaskResponse.fromEntity(task);
-    }
 
     // ---------------- FILTRI CUSTOM PER TASK ----------------
 

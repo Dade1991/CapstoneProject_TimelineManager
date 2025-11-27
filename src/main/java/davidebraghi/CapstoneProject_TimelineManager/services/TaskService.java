@@ -97,48 +97,6 @@ public class TaskService {
         return task;
     }
 
-//    public Task findTaskByProjectCategoryAndTaskId(Long projectId, Long categoryId, Long taskId) {
-//        log.debug("Chiamato findTaskByProjectCategoryAndTaskId con projectId={}, categoryId={}, taskId={}", projectId, categoryId, taskId);
-//
-//        Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
-//                .orElseThrow(() -> new NotFoundException(
-//                        "Task with ID " + taskId + " has not been found in Project " + projectId));
-//
-//        List<Long> categoryIds = task.getCategories().stream()
-//                .map(Category::getCategoryId)
-//                .toList();
-//        log.debug("Categorie associate al task {}: {}", taskId, categoryIds);
-//
-//        boolean inCategory = categoryIds.contains(categoryId);
-//        log.debug("Il task appartiene alla categoria? {}", inCategory);
-//
-//        if (!inCategory) {
-//            throw new BadRequestException(
-//                    "Task with ID " + taskId + " does not belong to Category " + categoryId);
-//        }
-//
-//        return task;
-//    }
-
-    // UPDATE TASK CATEGORY
-
-    public Task updateTaskCategories(Long projectId, List<Long> categoryIds, Long taskId) {
-        // Recupera la task in base a projectId e taskId
-        Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
-                .orElseThrow(() -> new NotFoundException("Task not found for project " + projectId + " and task " + taskId));
-
-        // Recupera le categorie in base agli ID forniti
-        Set<Category> categories = categoryRepository.findAllById(categoryIds)
-                .stream()
-                .collect(Collectors.toSet());
-
-        // Aggiorna le categorie assegnate alla task
-        task.setCategories(categories);
-
-        // Salva la task con le categorie aggiornate
-        return taskRepository.save(task);
-    }
-
     // FIND_BY_ID_AND_UPDATE
 
     public Task updateTask(Long projectId, Long categoryId, Long taskId, TaskUpdateRequest payload) {
@@ -224,18 +182,6 @@ public class TaskService {
 
     // COMPLETE TASK
 
-//    public Task completeTask(Long projectId, Long categoryId, Long taskId) {
-//        Task task = findTaskByProjectCategoryAndTaskId(projectId, categoryId, taskId);
-//        if (task.isCompleted()) {
-//            throw new BadRequestException("Task already completed.");
-//        }
-//        task.setCompletedAt(LocalDate.now());
-//        task.setIsCompleted(true);
-//        return taskRepository.save(task);
-//    }
-//
-    // COMPLETE TASK
-
     public Task completeTask(Long projectId, Long taskId) {
         Task task = findTaskByProjectIdAndTaskId(projectId, taskId);
         if (task.isCompleted()) {
@@ -274,40 +220,11 @@ public class TaskService {
         return taskRepository.save(foundTask);
     }
 
-    //    ======== METODI UTLITY ========
-
-    // FIND_ALL ordinato per categoria
-
-    public List<Task> findTasksByCategoryOrdered(Long categoryId) {
-        return taskRepository.findByCategories_CategoryIdOrderByPositionAsc(categoryId);
-    }
-
-    // FIND_ALL (non-paginato)
-
-    public List<Task> findAllTaskByProjectId(Long projectId) {
-        return this.taskRepository.findByProject_ProjectId(projectId);
-    }
-
     // FIND_TASK_BY_PROJECT
 
     public List<Task> findTaskByProject(Long projectId) {
         return this.taskRepository.
                 findByProjectIdWithCategories(projectId);
-    }
-
-    // FIND_BY_STATUS
-
-    public List<Task> findTaskByProjectAndStatus(Long projectId, Long statusId) {
-        return this.taskRepository.findByProject_ProjectIdAndStatus_TaskStatusId(projectId, statusId);
-    }
-
-    // FIND_BY_ASSIGNEE
-
-    public List<Task> findTaskByProjectAndAssignee(Long projectId, Long userId) {
-        return task_assigneeRepository.findByTask_TaskIdAndUser_UserId(projectId, userId).
-                stream().
-                map(Task_Assignee::getTask).
-                toList();
     }
 
     // ======== FIND_WITH_SMART_FILTERS ========
@@ -474,6 +391,57 @@ public class TaskService {
 }
 
 //    ======= WAITING AREA =======
+
+
+// UPDATE TASK CATEGORY
+
+//    public Task updateTaskCategories(Long projectId, List<Long> categoryIds, Long taskId) {
+//        // Recupera la task in base a projectId e taskId
+//        Task task = taskRepository.findByProject_ProjectIdAndTaskId(projectId, taskId)
+//                .orElseThrow(() -> new NotFoundException("Task not found for project " + projectId + " and task " + taskId));
+//
+//        // Recupera le categorie in base agli ID forniti
+//        Set<Category> categories = categoryRepository.findAllById(categoryIds)
+//                .stream()
+//                .collect(Collectors.toSet());
+//
+//        // Aggiorna le categorie assegnate alla task
+//        task.setCategories(categories);
+//
+//        // Salva la task con le categorie aggiornate
+//        return taskRepository.save(task);
+//    }
+
+
+//    ======== METODI UTLITY ========
+
+// FIND_ALL ordinato per categoria
+
+//    public List<Task> findTasksByCategoryOrdered(Long categoryId) {
+//        return taskRepository.findByCategories_CategoryIdOrderByPositionAsc(categoryId);
+//    }
+
+// FIND_ALL (non-paginato)
+
+//    public List<Task> findAllTaskByProjectId(Long projectId) {
+//        return this.taskRepository.findByProject_ProjectId(projectId);
+//    }
+
+
+// FIND_BY_STATUS
+
+//    public List<Task> findTaskByProjectAndStatus(Long projectId, Long statusId) {
+//        return this.taskRepository.findByProject_ProjectIdAndStatus_TaskStatusId(projectId, statusId);
+//    }
+
+// FIND_BY_ASSIGNEE
+
+//    public List<Task> findTaskByProjectAndAssignee(Long projectId, Long userId) {
+//        return task_assigneeRepository.findByTask_TaskIdAndUser_UserId(projectId, userId).
+//                stream().
+//                map(Task_Assignee::getTask).
+//                toList();
+//    }
 
 // ASSIGN USER TO TASK
 
