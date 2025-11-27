@@ -7,6 +7,7 @@ import davidebraghi.CapstoneProject_TimelineManager.entities.Task;
 import davidebraghi.CapstoneProject_TimelineManager.entities.User;
 import davidebraghi.CapstoneProject_TimelineManager.enums.TaskPriorityENUM;
 import davidebraghi.CapstoneProject_TimelineManager.exceptions.ValidationException;
+import davidebraghi.CapstoneProject_TimelineManager.services.ProjectService;
 import davidebraghi.CapstoneProject_TimelineManager.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,9 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private ProjectService projectService;
+
 
     // GET - FIND_ALL (paginato) - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks
 
@@ -57,7 +61,7 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
     public TaskResponse createTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -84,7 +88,7 @@ public class TaskController {
 
     @PutMapping("/{taskId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
     public TaskResponse updateTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -111,7 +115,7 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
     public void deleteTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -124,15 +128,73 @@ public class TaskController {
     // PATCH per aggiornare categorie di una determinata task - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/categories
 
     @PatchMapping("/{taskId}/categories")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
     public TaskResponse updateTaskCategories(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
             @PathVariable Long taskId,
             @RequestBody List<Long> categoryIds
     ) {
-        Task updatedTask = taskService.updateTaskCategories(projectId, categoryIds, taskId);
+        Task updatedTask = taskService.updateTaskCategories(projectId, taskId, categoryIds);
         return TaskResponse.fromEntity(updatedTask);
+    }
+
+    // ---------------- COMPLETA/RIAPRI TASK ----------------
+
+    // POST - COMPLETE TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/complete
+
+    @PostMapping("/{taskId}/complete")
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
+    public TaskResponse completeTask(
+            @PathVariable Long projectId,
+            @PathVariable Long categoryId,
+            @PathVariable Long taskId
+    ) {
+        Task task = taskService.completeTask(projectId, categoryId, taskId);
+        return TaskResponse.fromEntity(task);
+    }
+
+    // PUT - REOPEN COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/reopen
+
+    @PostMapping("/{taskId}/reopen")
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
+    public TaskResponse reopenTask(
+            @PathVariable Long projectId,
+            @PathVariable Long categoryId,
+            @PathVariable Long taskId
+    ) {
+        Task task = taskService.reopenCompletedTask(projectId, categoryId, taskId);
+        return TaskResponse.fromEntity(task);
+    }
+
+    // ---------------- CAMBIO STATUS TASK DEDICATO ----------------
+
+    // PUT - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status
+
+//    @PutMapping("/{taskId}/status")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public TaskResponse findTaskByIdAndUpdateTaskStatus(
+//            @PathVariable Long projectId,
+//            @PathVariable Long taskId,
+//            @RequestBody Map<String, Long> statusPayload
+//    ) {
+//        Long newStatusId = statusPayload.get("statusId");
+//        Task updatedTask = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, newStatusId);
+//        return TaskResponse.fromEntity(updatedTask);
+//    }
+
+    // PATCH - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status/{statusId}
+
+    @PatchMapping("/{taskId}/status/{statusId}")
+    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
+    public TaskResponse updateTaskStatus(
+            @PathVariable Long projectId,
+            @PathVariable Long categoryId,
+            @PathVariable Long taskId,
+            @PathVariable Long statusId
+    ) {
+        Task task = taskService.findTaskByIdAndProjectAndUpdateTaskStatus(projectId, taskId, statusId);
+        return TaskResponse.fromEntity(task);
     }
 
     // ---------------- FILTRI CUSTOM PER TASK ----------------

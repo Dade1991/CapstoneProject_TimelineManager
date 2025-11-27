@@ -417,16 +417,48 @@ public class TaskService {
                         "Task with ID " + taskId + " not found in Project " + projectId));
     }
 
-    //    aggiorna le posizioni in una lista di categorie (ordine definito dal frontEnd)
+    //    aggiorna le posizioni in una lista di tasks (ordine definito dal frontEnd)
 
-    public void updateTaskOrder(Long categoryId, List<Long> orderedTaskIds) {
+    public void updateTaskOrder(Long projectId, Long categoryId, List<Long> orderedTaskIds) {
         AtomicInteger index = new AtomicInteger(0);
         orderedTaskIds.forEach(taskId -> {
             Task task = taskRepository.findById(taskId)
                     .orElseThrow(() -> new NotFoundException("Task not found with id " + taskId));
+
+            // Controlla che la task appartenga al progetto corretto
+            if (!task.getProject().getProjectId().equals(projectId)) {
+                throw new BadRequestException("Task " + taskId + " does not belong to Project " + projectId);
+            }
+
+            // Facoltativo: controlla che la task appartenga anche alla categoria
+            if (categoryId != null) {
+                boolean belongsToCategory = task.getCategories().stream()
+                        .anyMatch(cat -> cat.getCategoryId().equals(categoryId));
+                if (!belongsToCategory) {
+                    throw new BadRequestException("Task " + taskId + " does not belong to Category " + categoryId);
+                }
+            }
+
             task.setPosition(index.getAndIncrement());
             taskRepository.save(task);
         });
+    }
+
+    //    aggiorna le posizioni in una lista di categorie (ordine definito dal frontEnd)
+
+    public void updateTaskCategory(Long projectId, Long taskId, Long newCategoryId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("Project not found with id " + projectId));
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found with id " + taskId));
+        Category category = categoryRepository.findById(newCategoryId)
+                .orElseThrow(() -> new NotFoundException("Category not found with id " + newCategoryId));
+
+        // rimuovi vecchie categorie e imposta solo la nuova categoria
+
+        task.getCategories().clear();
+        task.getCategories().add(category);
+        taskRepository.save(task);
     }
 
     //    dopo la cancellazione di una task, riallinea l'array delle task per non avere buchi

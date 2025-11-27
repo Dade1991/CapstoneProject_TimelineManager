@@ -22,7 +22,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findByCreator_UserId(Long userId);
 
-    // prende tutti i progetti, associa i membri ai progetti (LEFT JOIN) e restituisce tutti i membri ai relativi progetti (projectRepository)
+    // prende tutti i progetti, associa i membri ai progetti (LEFT JOIN) e restituisce tutti i membri ai relativi progetti
 
     @Query("""
               SELECT DISTINCT p FROM Project p
