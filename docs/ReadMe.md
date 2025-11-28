@@ -60,13 +60,13 @@ L'obiettivo principale è permettere la gestione multi-utente di progetti tramit
 
 
 
-| Pacchetto             | Versione     | Ruolo                |
+| Pacchetto                 | Versione         | Ruolo                |
 
-|-----------------------|--------------|----------------------|
+|---------------------------|------------------|----------------------|
 
 | \*\*React\*\*             | \*\*19.2.0\*\*   | Framework UI         |
 
-| \*\*@dnd-kit/core\*\*     | \*\*6.3.1\*\*    | Drag \& Drop moderno  |
+| \*\*@dnd-kit/core\*\*     | \*\*6.3.1\*\*    | Drag \& Drop moderno |
 
 | \*\*@dnd-kit/sortable\*\* | \*\*10.0.0\*\*   | Sortable lists       |
 
@@ -234,15 +234,15 @@ POST	/api/users/{userId}/avatar						# Upload avatar (file multipart, Cloudinary
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	      |
 
 |-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
 
-| `activityId`        	| Long (PK)             | Identificativo univoco attività              	| AUTO\_INCREMENT       	|
+| `activityId`        	| Long (PK)             | Identificativo univoco attività              	| AUTO\_INCREMENT             	|
 
-| `activityType`      	| ActivityTypeENUM      | Tipo di attività (Enum, es. CREATE, DELETE) 	| NOT NULL             		|
+| `activityType`      	| ActivityTypeENUM      | Tipo di attività (Enum, es. CREATE, DELETE) 	| NOT NULL             	       	|
 
-| `activityDescription` | String (TEXT)        	| Descrizione dettagliata dell'attività        	| NOT NULL             		|
+| `activityDescription` | String (TEXT)        	| Descrizione dettagliata dell'attività        	| NOT NULL             	      	|
 
 | `timestamp`         	| LocalDateTime         | Data e ora dell'attività                      | NOT NULL, CreationTimestamp 	|
 
@@ -252,15 +252,15 @@ Relazioni
 
 
 
-| Campo      		| Tipo relazione       	| Entità associata 				| Tipo Fetch           		| Nullable | Note 			|
+| Campo      		        | Tipo relazione       	| Entità associata 				                      | Tipo Fetch           		      | Nullable | Note 		                	|
 
 |-----------------------|-----------------------|-----------------------------------------------|-------------------------------|----------|----------------------------|
 
-| `user`     		| @ManyToOne           	| User             				| EAGER                		| NO       | Utente autore attività    	|
+| `user`     	         	| @ManyToOne           	| User             				                      | EAGER                		      | NO       | Utente autore attività    	|
 
-| `project`  		| @ManyToOne           	| Project          				| LAZY                 		| SÌ       | Progetto associato (opz.) 	|
+| `project`  		        | @ManyToOne           	| Project          				                      | LAZY                 		      | SÌ       | Progetto associato (opz.)  |
 
-| `task`     		| @ManyToOne           	| Task             				| LAZY                 		| SÌ       | Task associato (opz.)     	|
+| `task`     		        | @ManyToOne           	| Task             				                      | LAZY                 		      | SÌ       | Task associato (opz.)     	|
 
 
 
@@ -272,17 +272,17 @@ Relazioni
 
 | Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------------|-----------------------------------------------|--------------------------|
 
-| `categoryId`       	| Long (PK)		| Identificativo univoco categoria     		| AUTO\_INCREMENT       	|
+| `categoryId`       	  | Long (PK)		          | Identificativo univoco categoria     		      | AUTO\_INCREMENT       	|
 
-| `categoryName`     	| String   		| Nome categoria (es. "To Do")        		| OPTIONAL           	  	|
+| `categoryName`     	  | String   		          | Nome categoria (es. "To Do")        		      | OPTIONAL           	  	|
 
-| `categoryColor`    	| String   		| Colore CSS per UI (es. "#FF6B6B")    		| OPTIONAL             		|
+| `categoryColor`    	  | String   		          | Colore CSS per UI (es. "#FF6B6B")    		      | OPTIONAL             		|
 
-| `isDefaultInitial` 	| Boolean  		| Categoria predefinita iniziale       		| NOT NULL, DEFAULT true 	|
+| `isDefaultInitial` 	  | Boolean  		          | Categoria predefinita iniziale       		      | NOT NULL, DEFAULT true 	|
 
-| `position`         	| int      		| Ordine visualizzazione colonne       		| NOT NULL             		|
+| `position`         	  | int      		          | Ordine visualizzazione colonne       		      | NOT NULL             		|
 
 
 
@@ -290,13 +290,13 @@ Relazioni
 
 
 
-| Campo      		| Tipo relazione       	| Entità associata 				| Tipo Fetch           		| Nullable | JSON Handling		|
+| Campo      		| Tipo relazione       	| Entità associata 				| Tipo Fetch      | Nullable | JSON Handling		  |
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|----------|----------------------------|
+|---------------|-----------------------|-------------------------|-----------------|----------|--------------------|
 
-| `project` 		| @ManyToOne           	| Project          				| LAZY       			| NO	   | @JsonIgnore       		|
+| `project` 		| @ManyToOne           	| Project          				| LAZY       			| NO	     | @JsonIgnore       	|
 
-| `tasks`   		| @ManyToMany (mappedBy)| Task          				| -          			| -        | @JsonBackReference 	|
+| `tasks`   		| @ManyToMany (mappedBy)| Task          				  | -          			| -        | @JsonBackReference |
 
 
 
@@ -306,21 +306,21 @@ Relazioni
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	  |
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------------|-----------------------------------------------|---------------------------|
 
-| `projectId`        	| Long (PK)     	| ID univoco progetto                  		| AUTO\_INCREMENT       	|
+| `projectId`        	  | Long (PK)     	      | ID univoco progetto                  		      | AUTO\_INCREMENT       	  |
 
-| `projectName`      	| String        	| Nome progetto                        		| OPTIONAL             		|
+| `projectName`      	  | String        	      | Nome progetto                        		      | OPTIONAL             	    |
 
-| `projectDescription`	| String (TEXT)		| Descrizione progetto                 		| OPTIONAL             		|
+| `projectDescription`	| String (TEXT)		      | Descrizione progetto                 		      | OPTIONAL             		  |
 
-| `creationDate`     	| LocalDateTime 	| Data creazione (auto)                		| NOT NULL, updatable=false 	|
+| `creationDate`     	  | LocalDateTime 	      | Data creazione (auto)                		      | NOT NULL, updatable=false |
 
-| `expiryDate`       	| LocalDate     	| Data scadenza progetto               		| OPTIONAL             		|
+| `expiryDate`          | LocalDate     	      | Data scadenza progetto               		      | OPTIONAL             		  |
 
-| `taskCount`        	| int           	| \*\*@Transient\*\* - Conta task (calcolato) 	| -                  		|
+| `taskCount`        	  | int           	      | \*\*@Transient\*\* - Conta task (calcolato) 	| -                  		    |
 
 
 
@@ -328,21 +328,21 @@ Relazioni
 
 
 
-| Campo      		| Tipo relazione       	| Entità associata 				| Tipo Fetch           		| Cascade/Orphan | JSON Handling 	|
+| Campo      		    | Tipo relazione       	| Entità associata 				  | Tipo Fetch           		| Cascade/Orphan | JSON Handling 	|
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|----------------|----------------------|
+|-------------------|-----------------------|---------------------------|-------------------------|----------------|----------------|
 
-| `categories`  	| @OneToMany (mappedBy) | Category          				| DEFAULT        		| ALL/YES        | @JsonIgnore   	|
+| `categories`  	  | @OneToMany (mappedBy) | Category          				| DEFAULT        		      | ALL/YES        | @JsonIgnore   	|
 
-| `creator`     	| @ManyToOne            | User              				| \*\*EAGER\*\*      		| -              | -             	|
+| `creator`     	  | @ManyToOne            | User              				| \*\*EAGER\*\*      		  | -              | -             	|
 
-| `tasks`       	| @OneToMany (mappedBy) | Task             			 	| \*\*LAZY\*\*       		| ALL/YES        | -             	|
+| `tasks`       	  | @OneToMany (mappedBy) | Task             			 	  | \*\*LAZY\*\*       		  | ALL/YES        | -             	|
 
-| `comments`    	| @OneToMany (mappedBy) | Comment           				| \*\*LAZY\*\*       		| ALL/YES        | -             	|
+| `comments`    	  | @OneToMany (mappedBy) | Comment           				| \*\*LAZY\*\*       		  | ALL/YES        | -             	|
 
-| `activities`  	| @OneToMany (mappedBy) | Activity\_Log      				| \*\*LAZY\*\*       		| ALL/YES        | -             	|
+| `activities`  	  | @OneToMany (mappedBy) | Activity\_Log      				| \*\*LAZY\*\*       		  | ALL/YES        | -             	|
 
-| `projectMembers`	| @OneToMany (mappedBy) | ProjectMember     				| \*\*EAGER\*\*      		| ALL/YES        | @JsonIgnore   	|
+| `projectMembers`	| @OneToMany (mappedBy) | ProjectMember     				| \*\*EAGER\*\*      		  | ALL/YES        | @JsonIgnore   	|
 
 
 
@@ -352,13 +352,13 @@ Relazioni
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	   |
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------------|-----------------------------------------------|----------------------------|
 
-| `projectMemberId`  	| Long (PK)     	| ID univoco membership                		| AUTO\_INCREMENT       	|
+| `projectMemberId`  	  | Long (PK)     	      | ID univoco membership                		      | AUTO\_INCREMENT       	   |
 
-| `creationDate`     	| LocalDateTime 	| Data creazione membership (auto)     		| NOT NULL, updatable=false 	|
+| `creationDate`     	  | LocalDateTime 	      | Data creazione membership (auto)     		      | NOT NULL, updatable=false  |
 
 
 
@@ -366,15 +366,15 @@ Relazioni
 
 
 
-| Campo      		| Tipo relazione       	| Entità associata 				| Tipo Fetch           		| Nullable |
+| Campo      		| Tipo relazione       	| Entità associata 				| Tipo Fetch          | Nullable     |
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|----------|
+|---------------|-----------------------|-------------------------|---------------------|--------------|
 
-| `project` 		| @ManyToOne 	 	| Project          				| \*\*EAGER\*\*  			| \*\*NO\*\*   |
+| `project` 		| @ManyToOne 	 	        | Project          				| \*\*EAGER\*\*  			| \*\*NO\*\*   |
 
-| `user`    		| @ManyToOne  		| User             				| \*\*EAGER\*\*  			| \*\*NO\*\*   |
+| `user`    		| @ManyToOne  		      | User             				| \*\*EAGER\*\*  			| \*\*NO\*\*   |
 
-| `role`    		| @ManyToOne  		| User\_Role        				| \*\*EAGER\*\*  			| \*\*NO\*\*   |
+| `role`    		| @ManyToOne  		      | User\_Role        			| \*\*EAGER\*\*  			| \*\*NO\*\*   |
 
 
 
@@ -384,29 +384,29 @@ Relazioni
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo                  | Descrizione                             | Constraints           	|
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------------|-----------------------------------------|-------------------------|
 
-| `taskId`           	| Long (PK)             | ID univoco task                      		| AUTO\_INCREMENT	       	|
+| `taskId`           	  | Long (PK)             | ID univoco task                      		| AUTO\_INCREMENT	       	|
 
-| `taskTitle`        	| String                | Titolo task                          		| OPTIONAL             		|
+| `taskTitle`        	  | String                | Titolo task                          		| OPTIONAL             		|
 
-| `taskDescription`  	| String                | Descrizione task                     		| OPTIONAL             		|
+| `taskDescription`  	  | String                | Descrizione task                     		| OPTIONAL             		|
 
-| `taskPriority`     	| TaskPriorityENUM      | Priorità (LOW, MEDIUM, HIGH)        	 	| OPTIONAL             		|
+| `taskPriority`     	  | TaskPriorityENUM      | Priorità (LOW, MEDIUM, HIGH)        	 	| OPTIONAL             		|
 
-| `createdAt`        	| LocalDate             | Data creazione (auto)                		| NOT NULL             		|
+| `createdAt`        	  | LocalDate             | Data creazione (auto)                		| NOT NULL             		|
 
-| `updatedAt`        	| LocalDate             | Data ultimo aggiornamento (auto)     		| NOT NULL             		|
+| `updatedAt`        	  | LocalDate             | Data ultimo aggiornamento (auto)     		| NOT NULL             		|
 
-| `isCompleted`      	| Boolean               | Flag completamento                   		| OPTIONAL             		|
+| `isCompleted`      	  | Boolean               | Flag completamento                   		| OPTIONAL             		|
 
-| `completedAt`      	| LocalDate             | Data completamento                   		| OPTIONAL             		|
+| `completedAt`      	  | LocalDate             | Data completamento                   		| OPTIONAL             		|
 
-| `taskExpiryDate`   	| LocalDate             | Scadenza task                        		| OPTIONAL             		|
+| `taskExpiryDate`   	  | LocalDate             | Scadenza task                        		| OPTIONAL             		|
 
-| `position`         	| \*\*int\*\*               | Ordine drag \& drop                   		| NOT NULL             		|
+| `position`         	  | \*\*int\*\*           | Ordine drag \& drop                   	| NOT NULL             		|
 
 
 
@@ -414,25 +414,25 @@ Relazioni
 
 
 
-| Campo          	| Tipo relazione       | Entità associata   | Fetch Type | Nullable | JSON Handling		|
+| Campo          	   | Tipo relazione       | Entità associata   | Fetch Type     | Nullable   | JSON Handling		      |
 
-|-----------------------|----------------------|--------------------|------------|----------|---------------------------|
+|--------------------|----------------------|--------------------|----------------|------------|------------------------|
 
-| `project`      	| @ManyToOne           | Project            | \*\*EAGER\*\*  | \*\*NO\*\*   | @JsonIgnore		|
+| `project`      	   | @ManyToOne           | Project            | \*\*EAGER\*\*  | \*\*NO\*\* | @JsonIgnore		        |
 
-| `status`       	| @ManyToOne           | Task\_Status        | \*\*EAGER\*\*  |  SÌ      | @JsonIgnore 		|
+| `status`       	   | @ManyToOne           | Task\_Status       | \*\*EAGER\*\*  |  SÌ        | @JsonIgnore 		        |
 
-| `creator`      	| @ManyToOne           | User               | \*\*EAGER\*\*  | \*\*NO\*\*   | @JsonIgnore 		|
+| `creator`      	   | @ManyToOne           | User               | \*\*EAGER\*\*  | \*\*NO\*\* | @JsonIgnore 		        |
 
-| `lastModifiedBy`	| @ManyToOne           | User               | DEFAULT    |  SÌ      | @JsonIgnore 		|
+| `lastModifiedBy`	 | @ManyToOne           | User               | DEFAULT        |  SÌ        | @JsonIgnore 		        |
 
-| `assignees`    	| @OneToMany (mappedBy)| Task\_Assignee      | \*\*LAZY\*\*   |  -       | @JsonIgnore 		|
+| `assignees`    	   | @OneToMany (mappedBy)| Task\_Assignee     | \*\*LAZY\*\*   |  -         | @JsonIgnore 		        |
 
-| `comments`     	| @OneToMany (mappedBy)| Comment            | \*\*LAZY\*\*   |  -       | @JsonIgnore 		|
+| `comments`     	   | @OneToMany (mappedBy)| Comment            | \*\*LAZY\*\*   |  -         | @JsonIgnore 		        |
 
-| `activities`   	| @OneToMany (mappedBy)| Activity\_Log       | \*\*LAZY\*\*   |  -       | @JsonIgnore 		|
+| `activities`   	   | @OneToMany (mappedBy)| Activity\_Log      | \*\*LAZY\*\*   |  -         | @JsonIgnore 		        |
 
-| `categories`   	| \*\*@ManyToMany\*\*      | Category           | -          |  -       | @JsonManagedReference 	|
+| `categories`   	   | \*\*@ManyToMany\*\*  | Category           | -              |  -         | @JsonManagedReference 	|
 
 
 
@@ -442,13 +442,13 @@ Relazioni
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	    |
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------------|-----------------------------------------------|-----------------------------|
 
-| `taskAssigneesId` 	| Long (PK)     	| ID univoco assegnazione task-utente  		| AUTO\_INCREMENT       		|
+| `taskAssigneesId` 	  | Long (PK)     	      | ID univoco assegnazione task-utente  		      | AUTO\_INCREMENT       		  |
 
-| `creationDate`    	| LocalDate     	| Data di assegnazione (auto)           	| NOT NULL, updatable=false 	|
+| `creationDate`    	  | LocalDate     	      | Data di assegnazione (auto)           	      | NOT NULL, updatable=false 	|
 
 
 
@@ -456,9 +456,9 @@ Relazioni
 
 
 
-| Campo          	| Tipo relazione       | Entità associata   | Fetch Type | Nullable |
+| Campo     | Tipo relazione       | Entità associata   | Fetch Type     | Nullable     |
 
-|-----------------------|----------------------|--------------------|------------|----------|
+|-----------|----------------------|--------------------|----------------|--------------|
 
 | `task` 		| @ManyToOne           | Task               | \*\*EAGER\*\*  | \*\*NO\*\*   |
 
@@ -472,15 +472,15 @@ Relazioni
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo                  | Descrizione                             | Constraints           	|
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------------|-----------------------------------------|-------------------------|
 
-| `taskStatusId` 	| Long (PK)     	| ID univoco stato task                		| AUTO\_INCREMENT              	|
+| `taskStatusId` 	      | Long (PK)     	      | ID univoco stato task                		| AUTO\_INCREMENT         |
 
-| `statusName`   	| TaskStatusENUM	| Nome stato (Enum, unico)             		| UNIQUE, NOT NULL            	|
+| `statusName`   	      | TaskStatusENUM	      | Nome stato (Enum, unico)             		| UNIQUE, NOT NULL        |
 
-| `orderIndex`   	| Integer       	| Indice per ordinamento visuale       		| NOT NULL                   	|
+| `orderIndex`          | Integer       	      | Indice per ordinamento visuale       		| NOT NULL                |
 
 
 
@@ -488,11 +488,11 @@ Relazioni
 
 
 
-| Campo          	| Tipo relazione       | Entità associata   | Fetch Type |
+| Campo          	| Tipo relazione       | Entità associata   | Fetch Type     |
 
-|-----------------------|----------------------|--------------------|------------|
+|-----------------|----------------------|--------------------|----------------|
 
-| `tasks`		| @OneToMany           | Task               | \*\*LAZY\*\*   |
+| `tasks`		      | @OneToMany           | Task               | \*\*LAZY\*\*   |
 
 
 
@@ -502,25 +502,25 @@ Relazioni
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo            | Descrizione                             | Constraints           	          |
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------|-----------------------------------------|-----------------------------------|
 
-| `userId`         	| Long (PK)   		| ID univoco utente                    		| AUTO\_INCREMENT              	|
+| `userId`         	    | Long (PK)   		| ID univoco utente                    		| AUTO\_INCREMENT              	    |
 
-| `name`           	| String      		| Nome utente                          		| NOT NULL, max 50            	|
+| `name`           	    | String      		| Nome utente                          		| NOT NULL, max 50            	    |
 
-| `surname`        	| String      		| Cognome utente                       		| NOT NULL, max 50            	|
+| `surname`             | String      		| Cognome utente                       		| NOT NULL, max 50            	    |
 
-| `nickname`       	| String      		| Nickname univoco                     		| \*\*UNIQUE\*\*, NOT NULL, max 50	|
+| `nickname`       	    | String      		| Nickname univoco                     		| \*\*UNIQUE\*\*, NOT NULL, max 50	|
 
-| `email`          	| String      		| Email univoca                        		| \*\*UNIQUE\*\*, NOT NULL, max 50	|
+| `email`          	    | String      		| Email univoca                        		| \*\*UNIQUE\*\*, NOT NULL, max 50	|
 
-| `password`       	| String      		| Password hash (BCrypt)               		| NOT NULL, max 100           	|
+| `password`       	    | String      		| Password hash (BCrypt)               		| NOT NULL, max 100           	    |
 
-| `creationDate`   	| LocalDate   		| Data creazione (auto)                		| NOT NULL                    	|
+| `creationDate`   	    | LocalDate   		| Data creazione (auto)                		| NOT NULL                    	    |
 
-| `avatarUrl`      	| String      		| URL avatar Cloudinary                		| OPTIONAL                    	|
+| `avatarUrl`      	    | String      		| URL avatar Cloudinary                		| OPTIONAL                    	    |
 
 
 
@@ -528,21 +528,21 @@ Relazioni
 
 
 
-| Campo             | Tipo relazione       | Entità associata     | Fetch Type | JSON Handling |
+| Campo             | Tipo relazione       | Entità associata     | Fetch Type     | JSON Handling |
 
-|-------------------|----------------------|----------------------|------------|---------------|
+|-------------------|----------------------|----------------------|----------------|---------------|
 
 | `createdProjects` | @OneToMany (mappedBy)| Project              | \*\*LAZY\*\*   | @JsonIgnore   |
 
 | `createdTasks`    | @OneToMany (mappedBy)| Task                 | \*\*LAZY\*\*   | @JsonIgnore   |
 
-| `assignedTasks`   | @OneToMany (mappedBy)| Task\_Assignee        | \*\*LAZY\*\*   | @JsonIgnore   |
+| `assignedTasks`   | @OneToMany (mappedBy)| Task\_Assignee       | \*\*LAZY\*\*   | @JsonIgnore   |
 
 | `comments`        | @OneToMany (mappedBy)| Comment              | \*\*LAZY\*\*   | @JsonIgnore   |
 
-| `activities`      | @OneToMany (mappedBy)| Activity\_Log         | \*\*LAZY\*\*   | @JsonIgnore   |
+| `activities`      | @OneToMany (mappedBy)| Activity\_Log        | \*\*LAZY\*\*   | @JsonIgnore   |
 
-| `notifications`   | @OneToMany (mappedBy)| Email\_Notification   | \*\*LAZY\*\*   | @JsonIgnore   |
+| `notifications`   | @OneToMany (mappedBy)| Email\_Notification  | \*\*LAZY\*\*   | @JsonIgnore   |
 
 | `projectMembers`  | @OneToMany (mappedBy)| ProjectMember        | \*\*LAZY\*\*   | @JsonIgnore   |
 
@@ -554,13 +554,13 @@ Relazioni
 
 
 
-| Campo               	| Tipo                  | Descrizione                                 	| Constraints           	|
+| Campo               	| Tipo                  | Descrizione                             | Constraints           	|
 
-|-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
+|-----------------------|-----------------------|-----------------------------------------|-------------------------|
 
-| `roleId`  		| Long (PK)     	| ID univoco ruolo                     		| AUTO\_INCREMENT       		|
+| `roleId`  		        | Long (PK)     	      | ID univoco ruolo                     		| AUTO\_INCREMENT       	|
 
-| `roleName`		| RoleNameENUM  	| Nome ruolo (CREATOR, ADMIN, GUEST)   		| NOT NULL             		|
+| `roleName`		        | RoleNameENUM  	      | Nome ruolo (CREATOR, ADMIN, GUEST)   		| NOT NULL             		|
 
 
 
@@ -568,11 +568,11 @@ Relazioni
 
 
 
-| Campo            | Tipo relazione       | Entità associata | Fetch Type | JSON Handling |
+| Campo            | Tipo relazione       | Entità associata | Fetch Type   | JSON Handling |
 
-|------------------|----------------------|------------------|------------|---------------|
+|------------------|----------------------|------------------|--------------|---------------|
 
-| `projectMembers` | @OneToMany (mappedBy)| ProjectMember    | \*\*LAZY\*\*   | @JsonIgnore   |
+| `projectMembers` | @OneToMany (mappedBy)| ProjectMember    | \*\*LAZY\*\* | @JsonIgnore   |
 
 
 
@@ -604,15 +604,15 @@ Relazioni
 
 
 
-| Nome Enum               | Valori                                       							  | Utilizzo Principale             |
+| Nome Enum               | Valori                                       							                                                 | Utilizzo Principale             |
 
-|------------------------ |-------------------------------------------------------------------------------------------------------|---------------------------------|
+|------------------------ |------------------------------------------------------------------------------------------------------------|---------------------------------|
 
-| `ProjectPermissionENUM` | VIEW, MODIFY, ADMIN\_ACTIONS, CREATOR\_ACTIONS 							  | Permessi su progetti e risorse  |
+| `ProjectPermissionENUM` | VIEW, MODIFY, ADMIN\_ACTIONS, CREATOR\_ACTIONS 							                                               | Permessi su progetti e risorse  |
 
-| `RoleNameENUM`          | CREATOR, ADMIN, GUEST                         							  | Ruoli utente per progetto       |
+| `RoleNameENUM`          | CREATOR, ADMIN, GUEST                         							                                               | Ruoli utente per progetto       |
 
-| `TaskPriorityENUM`      | VERY\_LOW, LOW, MEDIUM, HIGH, CRITICAL        							  | Priorità task                   |
+| `TaskPriorityENUM`      | VERY\_LOW, LOW, MEDIUM, HIGH, CRITICAL        							                                               | Priorità task                   |
 
 | `TaskStatusENUM`        | TO\_DO, IN\_PROGRESS, IN\_REVIEW, UNDER\_TESTING, PAUSED, WAITING\_FEEDBACK, BLOCKED, CANCELLED, COMPLETED | Stato di avanzamento task       |
 
