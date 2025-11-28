@@ -39,6 +39,31 @@ public class TaskService {
     private UserService userService;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ProjectService projectService;
+    @Autowired
+    private ProjectMemberService projectMemberService;
+
+    @Autowired
+    public TaskService(
+            TaskRepository taskRepository,
+            Task_AssigneeRepository task_assigneeRepository,
+            Task_StatusRepository task_statusRepository,
+            ProjectRepository projectRepository,
+            UserService userService,
+            CategoryRepository categoryRepository,
+            ProjectService projectService,
+            ProjectMemberService projectMemberService
+    ) {
+        this.taskRepository = taskRepository;
+        this.task_assigneeRepository = task_assigneeRepository;
+        this.task_statusRepository = task_statusRepository;
+        this.projectRepository = projectRepository;
+        this.userService = userService;
+        this.categoryRepository = categoryRepository;
+        this.projectService = projectService;
+        this.projectMemberService = projectMemberService;
+    }
 
     // SAVE
 
