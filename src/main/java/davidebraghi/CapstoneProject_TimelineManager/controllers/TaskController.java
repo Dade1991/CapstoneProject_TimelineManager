@@ -61,7 +61,10 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize(
+            "@projectService.isUserCreator(#projectId, principal.userId) " +
+                    "or @projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)"
+    )
     public TaskResponse createTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -88,7 +91,10 @@ public class TaskController {
 
     @PutMapping("/{taskId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize(
+            "@projectService.isUserCreator(#projectId, principal.userId) " +
+                    "or @projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)"
+    )
     public TaskResponse updateTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -115,7 +121,10 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize(
+            "@projectService.isUserCreator(#projectId, principal.userId) " +
+                    "or @projectService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)"
+    )
     public void deleteTask(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,

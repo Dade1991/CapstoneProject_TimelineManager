@@ -20,7 +20,7 @@ public class TaskStatusController {
     // POST - COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/complete
 
     @PostMapping("/complete")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).ADMIN_ACTIONS)")
     public TaskResponse completeTask(
             @PathVariable Long projectId,
             @PathVariable Long taskId
@@ -32,7 +32,7 @@ public class TaskStatusController {
     // PATCH - REOPEN COMPLETED TASK - http://localhost:3001/api/projects/{projectId}/tasks/{taskId}/reopening
 
     @PatchMapping("/reopening")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).ADMIN_ACTIONS)")
     public TaskResponse reopenTask(
             @PathVariable Long projectId,
             @PathVariable Long taskId
@@ -46,7 +46,7 @@ public class TaskStatusController {
     // PATCH - UPDATE TASK STATUS - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/status/{statusId}
 
     @PatchMapping("/statusUpdate/{statusId}")
-    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).ADMIN_ACTIONS)")
     public TaskResponse updateTaskStatus(
             @PathVariable Long projectId,
             @PathVariable Long taskId,
