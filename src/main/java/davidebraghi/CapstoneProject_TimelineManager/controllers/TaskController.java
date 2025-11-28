@@ -125,20 +125,6 @@ public class TaskController {
         taskService.realignTaskPositions(categoryId);
     }
 
-    // PATCH per aggiornare categorie di una determinata task - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/{taskId}/categories
-
-//    @PatchMapping("/{taskId}/categories")
-//    @PreAuthorize("@projectService.isUserCreator(#projectId, principal.userId) or @projectService.hasPermission(#projectId, principal.userId, T(ProjectPermissionENUM).MODIFY)")
-//    public TaskResponse updateTaskCategories(
-//            @PathVariable Long projectId,
-//            @PathVariable Long categoryId,
-//            @PathVariable Long taskId,
-//            @RequestBody List<Long> categoryIds
-//    ) {
-//        Task updatedTask = taskService.updateTaskCategories(projectId, taskId, categoryIds);
-//        return TaskResponse.fromEntity(updatedTask);
-//    }
-
     // ---------------- FILTRI CUSTOM PER TASK ----------------
 
     // GET - http://localhost:3001/api/projects/{projectId}/categories/{categoryId}/tasks/search
