@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -65,9 +66,8 @@ public class ProjectMemberService {
     // controlla che uno user sia anche il creator di quel progetto
 
     public boolean isUserCreator(Long projectId, Long userId) {
-        ProjectMember member = projectMemberRepository.findByProjectProjectIdAndUserUserId(projectId, userId);
-        if (member == null) return false;
-        return member.getRole().getRoleName() == RoleNameENUM.CREATOR;
+        Project project = projectRepository.findById(projectId).orElse(null);
+        return project != null && project.getCreator().getUserId().equals(userId);
     }
 
     // controlla che uno user sia anche un membro di quel progetto
@@ -81,7 +81,6 @@ public class ProjectMemberService {
     public void addMemberToProject(Long projectId, Long userId, RoleNameENUM roleName) {
         ProjectMember existingMember = projectMemberRepository.findByProjectProjectIdAndUserUserId(projectId, userId);
         if (existingMember != null) {
-            log.info("User {} is already member of project {}, skipping insertion.", userId, projectId);
             return;
         }
         Project project = projectRepository.getReferenceById(projectId);
@@ -99,18 +98,14 @@ public class ProjectMemberService {
 
     // rimuovere un membro da un progetto, impedisce di rimuove Creator
 
+    @Transactional
     public void removeMemberFromProject(Long projectId, Long userId) {
         if (isUserCreator(projectId, userId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Creator cannot be removed from the project.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Creator cannot be removed");
         }
-
-        ProjectMember member = projectMemberRepository.findByProjectProjectIdAndUserUserId(projectId, userId);
-        if (member == null) {
-            throw new NotFoundException("User with ID " + userId + " not found in the project.");
-        }
-
-        projectMemberRepository.delete(member);
+        int deleted = projectMemberRepository.deleteByProjectIdAndUserIdNative(projectId, userId);
     }
+
 
     // cambiare il ruolo ad uno specifico user
 
@@ -144,33 +139,28 @@ public class ProjectMemberService {
     // logica di permessi del progetto (collegamento e comparazione con Switch dei dati):
 
     public boolean hasPermission(Long projectId, Long userId, ProjectPermissionENUM projectPermission) {
-        log.info("hasPermission called with projectId={}, userId={}, permission={}", projectId, userId, projectPermission);
         ProjectMember member = projectMemberRepository.findByProjectProjectIdAndUserUserId(projectId, userId);
-        if (member == null) return false;
+        if (member != null) {
+            RoleNameENUM role = member.getRole().getRoleName();
 
-        log.info("No ProjectMember found for userId={} in projectId={}. Returning false.", userId, projectId);
-
-        RoleNameENUM role = member.getRole().getRoleName();
-
-        log.info("User role is {} for userId={} in projectId={}", role, userId, projectId);
-
-        boolean result;
-        switch (projectPermission) {
-            case VIEW:
-                result = true;
-                break;
-            case MODIFY:
-            case ADMIN_ACTIONS:
-                result = (role == RoleNameENUM.CREATOR || role == RoleNameENUM.ADMIN);
-                break;
-            case CREATOR_ACTIONS:
-                result = (role == RoleNameENUM.CREATOR);
-                break;
-            default:
-                result = false;
+            boolean result =
+                    switch (projectPermission) {
+                        case VIEW -> true;
+                        case MODIFY, ADMIN_ACTIONS -> (role == RoleNameENUM.CREATOR || role == RoleNameENUM.ADMIN);
+                        case CREATOR_ACTIONS -> (role == RoleNameENUM.CREATOR);
+                        default -> false;
+                    };
+            return result;
         }
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("Project not found"));
 
-        log.info("Permission check result: {}", result);
-        return result;
+        if (project.getCreator().getUserId().equals(userId)) {
+            return projectPermission == ProjectPermissionENUM.VIEW ||
+                    projectPermission == ProjectPermissionENUM.MODIFY ||
+                    projectPermission == ProjectPermissionENUM.ADMIN_ACTIONS;
+        }
+        return false;
     }
+
 }

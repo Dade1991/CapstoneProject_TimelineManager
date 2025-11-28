@@ -4,6 +4,7 @@ import davidebraghi.CapstoneProject_TimelineManager.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class DND_Controller {
 
     @PostMapping("/categories/{categoryId}/tasks/dnd")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public ResponseEntity<?> updateTaskOrder(
             @PathVariable Long projectId,
             @PathVariable Long categoryId,
@@ -38,6 +40,7 @@ public class DND_Controller {
 
     @PatchMapping("/tasks/{taskId}/category/{newCategoryId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @PreAuthorize("@projectMemberService.hasPermission(#projectId, principal.userId, T(davidebraghi.CapstoneProject_TimelineManager.enums.ProjectPermissionENUM).MODIFY)")
     public ResponseEntity<?> updateTaskCategory(
             @PathVariable Long projectId,
             @PathVariable Long taskId,

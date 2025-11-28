@@ -42,7 +42,6 @@ public class CategoryService {
         }
         if (dataChanged && foundCategory.isDefaultInitial()) {
             foundCategory.markAsNoLongerDefault();
-            log.info("Category ID {} marked no more as default category.", foundCategory.getCategoryId());
         }
         Category savedCategory = categoryRepository.save(foundCategory);
         return CategoryResponse.fromEntity(savedCategory);
@@ -110,7 +109,6 @@ public class CategoryService {
         foundCategory.getTasks().clear();
 
         categoryRepository.delete(foundCategory);
-        log.info("Category with ID " + categoryId + " deleted from Project " + projectId);
     }
 
     //    -------- HELPER --------

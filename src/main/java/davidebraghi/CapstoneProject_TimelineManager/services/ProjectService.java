@@ -108,8 +108,6 @@ public class ProjectService {
     private void createDefaultCategoryForProject(Project project) {
         boolean isCategoryAlreadyExists = categoryRepository.existsByProjectAndCategoryNameIgnoreCase(project, "Default");
         if (isCategoryAlreadyExists) {
-            log.info("La categoria 'Default' esiste già per il progetto ID {}",
-                    project.getProjectId());
             return;
         }
         Category defaultCategory = new Category();
