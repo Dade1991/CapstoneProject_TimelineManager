@@ -70,8 +70,6 @@ L'obiettivo principale è permettere la gestione multi-utente di progetti tramit
 
 | \*\*@dnd-kit/sortable\*\* | \*\*10.0.0\*\*   | Sortable lists       |
 
-| \*\*@reduxjs/toolkit\*\*  | \*\*2.10.1\*\*   | State management     |
-
 | \*\*react-bootstrap\*\*   | \*\*2.10.10\*\*  | UI components        |
 
 | \*\*framer-motion\*\*     | \*\*12.23.24\*\* | Animazioni drag-drop |
@@ -240,7 +238,7 @@ POST	/api/users/{userId}/avatar						# Upload avatar (file multipart, Cloudinary
 
 |-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
 
-| `activityId`        	| Long (PK)             | Identificativo univoco attività              	| AUTO\_INCREMENT       		|
+| `activityId`        	| Long (PK)             | Identificativo univoco attività              	| AUTO\_INCREMENT       	|
 
 | `activityType`      	| ActivityTypeENUM      | Tipo di attività (Enum, es. CREATE, DELETE) 	| NOT NULL             		|
 
@@ -276,7 +274,7 @@ Relazioni
 
 |-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
 
-| `categoryId`       	| Long (PK)		| Identificativo univoco categoria     		| AUTO\_INCREMENT       		|
+| `categoryId`       	| Long (PK)		| Identificativo univoco categoria     		| AUTO\_INCREMENT       	|
 
 | `categoryName`     	| String   		| Nome categoria (es. "To Do")        		| OPTIONAL           	  	|
 
@@ -312,7 +310,7 @@ Relazioni
 
 |-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
 
-| `projectId`        	| Long (PK)     	| ID univoco progetto                  		| AUTO\_INCREMENT       		|
+| `projectId`        	| Long (PK)     	| ID univoco progetto                  		| AUTO\_INCREMENT       	|
 
 | `projectName`      	| String        	| Nome progetto                        		| OPTIONAL             		|
 
@@ -358,7 +356,7 @@ Relazioni
 
 |-----------------------|-----------------------|-----------------------------------------------|-------------------------------|
 
-| `projectMemberId`  	| Long (PK)     	| ID univoco membership                		| AUTO\_INCREMENT       		|
+| `projectMemberId`  	| Long (PK)     	| ID univoco membership                		| AUTO\_INCREMENT       	|
 
 | `creationDate`     	| LocalDateTime 	| Data creazione membership (auto)     		| NOT NULL, updatable=false 	|
 
@@ -652,7 +650,9 @@ Per una ulteriore visibilità delle funzionalità, controllare il DrawSQL nella 
 
 
 
+Link per Repository GitHub parte FRONT-END:
 
+https://github.com/Dade1991/CapstoneProject_TimelineManager_FE
 
 
 ---
